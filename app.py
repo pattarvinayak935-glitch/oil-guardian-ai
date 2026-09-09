@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Configure page
+# Configure Streamlit page for PC and Mobile devices
 st.set_page_config(
     page_title="OIL Guardian AI - SIH26165 Operations Hub",
     page_icon="🦺",
@@ -11,23 +11,23 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Custom CSS for seamless Streamlit iframe container integration
+# Responsive styling for Mobile & Desktop displays
 st.markdown(
     """
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
         .block-container {
-            padding-top: 0rem !important;
-            padding-bottom: 0rem !important;
-            padding-left: 0rem !important;
-            padding-right: 0rem !important;
+            padding: 0rem !important;
             max-width: 100% !important;
         }
         iframe {
             border: none !important;
             width: 100% !important;
+            min-height: 100vh !important;
+            -webkit-overflow-scrolling: touch !important;
         }
     </style>
     """,
@@ -58,12 +58,12 @@ view_mode = st.sidebar.radio(
 
 if view_mode == "🌟 Main Enterprise Hub":
     html_content = load_html("index.html")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=1000, scrolling=True)
 
 elif view_mode == "🦺 Employee Field Terminal":
     html_content = load_html("employee.html")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=1000, scrolling=True)
 
 elif view_mode == "📊 Safety Officer Command Center":
     html_content = load_html("officer.html")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=1000, scrolling=True)
