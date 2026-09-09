@@ -1,1 +1,16 @@
-.vercel
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches & Environments
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.vercel/
+
+# Operating System files
+.DS_Store
+Thumbs.db
