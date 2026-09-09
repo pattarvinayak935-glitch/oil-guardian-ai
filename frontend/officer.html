@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OIL Guardian AI - Safety Operations Command</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #070b14; color: #e2e8f0; overflow-x: hidden; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glass-card { background: rgba(13, 20, 36, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(30, 41, 59, 0.8); }
+    .glass-panel-sub { background: rgba(10, 15, 29, 0.6); border: 1px solid rgba(51, 65, 85, 0.4); }
+    .neon-glow-orange { box-shadow: 0 0 15px rgba(234, 88, 12, 0.35); }
+    .neon-bar { box-shadow: 0 0 10px rgba(234, 88, 12, 0.8); }
+    .token-highlight { background: rgba(245, 158, 11, 0.18); border-bottom: 1.5px dashed #f59e0b; color: #fef08a; padding: 0 4px; border-radius: 2px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col relative selection:bg-orange-500/30">
+
+  <!-- Ambient Glow -->
+  <div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[140px] pointer-events-none"></div>
+
+  <!-- Top Bar -->
+  <header class="bg-[#0b1120] border-b border-slate-800/80 sticky top-0 z-30 px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(234,88,12,0.4)]">
+        <i class="fa-solid fa-shield-halved text-white text-sm"></i>
+      </div>
+      <div class="flex items-center gap-4">
+        <h1 class="text-base font-bold text-white tracking-tight">OIL Guardian <span class="text-orange-500">AI</span></h1>
+        <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Command Center Live</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Officer Profile & Logout -->
+    <div class="flex items-center gap-4">
+      <button onclick="toggleOfficerProfileModal()" class="flex items-center gap-2.5 px-3 py-1.5 bg-[#141f36] border border-slate-700/80 hover:border-blue-500/50 rounded-xl text-xs font-semibold text-slate-200 transition-all">
+        <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <span>Safety Officer (Lead)</span>
+        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+      </button>
+      <a href="login.html" class="text-slate-400 hover:text-rose-400 transition-colors" title="Sign Out">
+        <i class="fa-solid fa-power-off text-sm"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- OFFICER PROFILE MODAL -->
+  <div id="officerProfileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-md w-full glass-card bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
+      <button onclick="toggleOfficerProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <div class="flex items-center gap-4 pb-5 border-b border-slate-800">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">Er. P. K. Hazarika</h3>
+          <p class="text-xs font-semibold text-blue-400">Chief Safety Officer & Directorate Lead</p>
+          <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">OISD Lead Auditor ID: OIL-HSE-004</span>
+        </div>
+      </div>
+      <div class="py-4 space-y-3 text-xs">
+        <div class="flex justify-between py-1 border-b border-slate-800/60">
+          <span class="text-slate-400">HQ Desk</span>
+          <span class="font-semibold text-white">Central E&P Command · Duliajan</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-slate-800/60">
+          <span class="text-slate-400">Authority Tier</span>
+          <span class="font-semibold text-emerald-400">Level 4 (Stop-Work Order Authorization)</span>
+        </div>
+        <div class="flex justify-between py-1">
+          <span class="text-slate-400">Active Jurisdiction</span>
+          <span class="font-semibold text-white">All Refineries & Drilling Rigs</span>
+        </div>
+      </div>
+      <button onclick="toggleOfficerProfileModal()" class="w-full mt-2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-colors">
+        Close Officer Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto w-full p-8 space-y-6 relative z-10">
+
+    <!-- ================= VIEW 1: QUEUE FEED ================= -->
+    <div id="queueView">
+      
+      <!-- Top Title & Sync Button -->
+      <div class="flex items-center justify-between pb-2">
+        <div>
+          <h2 class="text-2xl font-black text-white tracking-tight">Safety Telemetry Feed</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Live neural analysis of reports submitted across oilfields.</p>
+        </div>
+        <button onclick="renderAllReports()" class="px-3.5 py-2 bg-[#121a2d] border border-slate-700/80 text-slate-200 hover:text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-sm">
+          <i class="fa-solid fa-rotate text-orange-400"></i>
+          <span>Sync Feeds</span>
+        </button>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3.5 my-5">
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-rose-400">High Risk</span>
+            <i class="fa-solid fa-fire text-rose-500 text-xs"></i>
+          </div>
+          <p id="statHigh" class="text-3xl font-black text-white">0</p>
+        </div>
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-amber-400">Medium Risk</span>
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>
+          </div>
+          <p id="statMed" class="text-3xl font-black text-white">0</p>
+        </div>
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-emerald-400">Low Risk</span>
+            <i class="fa-solid fa-shield-check text-emerald-500 text-xs"></i>
+          </div>
+          <p id="statLow" class="text-3xl font-black text-white">0</p>
+        </div>
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-blue-400">Active Inves.</span>
+            <i class="fa-solid fa-crosshairs text-blue-400 text-xs"></i>
+          </div>
+          <p id="statInves" class="text-3xl font-black text-white">0</p>
+        </div>
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-slate-400">Resolved</span>
+            <i class="fa-solid fa-check text-slate-400 text-xs"></i>
+          </div>
+          <p id="statResolved" class="text-3xl font-black text-white">0</p>
+        </div>
+        <div class="p-4 bg-[#0d1424] rounded-2xl border border-orange-500/20 shadow-sm relative overflow-hidden">
+          <div class="flex justify-between items-start mb-2">
+            <span class="text-xs font-semibold text-orange-400">Total Logs</span>
+            <i class="fa-solid fa-database text-orange-400 text-xs"></i>
+          </div>
+          <p id="statTotal" class="text-3xl font-black text-white">0</p>
+        </div>
+      </div>
+
+      <!-- SEARCH BAR & FILTERS -->
+      <div class="bg-[#0b1120] rounded-2xl border border-slate-800/90 shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div class="relative w-full md:w-96">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Telemetry ID, site, department, or keyword..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all">
+          </div>
+
+          <div class="flex items-center gap-2.5 w-full md:w-auto">
+            <select id="riskFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+              <option value="ALL">All Risk Tiers</option>
+              <option value="High Risk">🔥 High Risk</option>
+              <option value="Medium Risk">⚠️ Medium Risk</option>
+              <option value="Low Risk">🛡️ Low Risk</option>
+            </select>
+            <select id="categoryFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+              <option value="ALL">All Categories</option>
+              <option value="Unsafe Act">Unsafe Act</option>
+              <option value="Unsafe Condition">Unsafe Condition</option>
+              <option value="Near-Miss">Near-Miss</option>
+            </select>
+            <button onclick="resetFilters()" title="Reset Filters" class="px-3 py-2.5 bg-[#121a2d] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/80 rounded-xl text-xs transition-colors">
+              <i class="fa-solid fa-filter-circle-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[#070b14] text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="px-6 py-3.5">Telemetry ID</th>
+                <th class="px-6 py-3.5">Site & Department</th>
+                <th class="px-6 py-3.5">Category</th>
+                <th class="px-6 py-3.5">Risk Tier</th>
+                <th class="px-6 py-3.5">SIF Prob.</th>
+                <th class="px-6 py-3.5">Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportsTableBody" class="divide-y divide-slate-800/80 font-medium text-slate-300"></tbody>
+          </table>
+        </div>
+        <div id="noResults" class="hidden p-8 text-center text-xs text-slate-500 font-semibold">
+          No records match your filter criteria.
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= VIEW 2: COMPREHENSIVE DETAILED REVIEW ================= -->
+    <div id="reviewView" class="hidden space-y-6">
+      
+      <!-- Top Action & Meta Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+        <div>
+          <button onclick="showQueueView()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800/70 hover:bg-slate-800 border border-slate-700 px-3.5 py-2 rounded-xl transition-colors mb-3">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Return to Telemetry Feed</span>
+          </button>
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-black text-orange-500 uppercase tracking-widest mono bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">SIH26165 NEURAL FORENSICS</span>
+            <span class="text-xs text-slate-500">•</span>
+            <span class="text-xs text-slate-400 font-medium">Real-time SIF Precursor Deconstruction</span>
+          </div>
+          <h2 id="revId" class="text-4xl font-black text-white tracking-tight mono mt-1">OG-2026-3527</h2>
+          <p id="revMeta" class="text-xs text-slate-400 font-medium mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-slate-500"></i>
+            <span>Duliajan Oilfield · Drilling Operations · 9/9/2026, 1:03:03 PM</span>
+          </p>
+        </div>
+
+        <div class="flex sm:flex-col items-end gap-2">
+          <div id="revRiskPill"></div>
+          <span class="text-[11px] text-slate-400 font-mono" id="revReporterBadge">Reporter: oil-79655</span>
+        </div>
+      </div>
+
+      <!-- FORENSIC METRICS STRIP: SIF PROBABILITY, RISK CATEGORY, OPERATIONAL RISK, IOGP RULE -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Metric 1: SIF Probability -->
+        <div class="p-4 glass-card rounded-2xl relative overflow-hidden border-orange-500/30">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">SIF Precursor Prob.</span>
+            <i class="fa-solid fa-radiation text-orange-500 text-xs"></i>
+          </div>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span id="cardSifProb" class="text-3xl font-black text-white mono">48.5%</span>
+            <span id="cardSifSeverity" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Elevated</span>
+          </div>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+            <div id="cardSifBar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full" style="width: 48.5%;"></div>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2">Likelihood of fatal or life-altering harm</p>
+        </div>
+
+        <!-- Metric 2: Risk Category -->
+        <div class="p-4 glass-card rounded-2xl relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Incident Category</span>
+            <i class="fa-solid fa-tag text-blue-400 text-xs"></i>
+          </div>
+          <div class="mt-1">
+            <span id="cardCategory" class="text-xl font-black text-white">Near-Miss</span>
+          </div>
+          <div class="flex items-center gap-1.5 mt-3 text-xs text-blue-400 font-semibold">
+            <i class="fa-solid fa-circle-check text-[10px]"></i>
+            <span id="cardCategorySub">High-Energy Close Call</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-1">Classified across Act, Cond., Near-Miss</p>
+        </div>
+
+        <!-- Metric 3: Operational Risk Tier -->
+        <div class="p-4 glass-card rounded-2xl relative overflow-hidden">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Severity</span>
+            <i class="fa-solid fa-gauge-high text-amber-400 text-xs"></i>
+          </div>
+          <div class="mt-1">
+            <span id="cardRiskTier" class="text-xl font-black text-amber-400">Medium Risk</span>
+          </div>
+          <div class="flex items-center gap-1.5 mt-3 text-xs text-slate-300 font-medium">
+            <i class="fa-solid fa-layer-group text-slate-500 text-[10px]"></i>
+            <span>Tier 2 Operational Event</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-1">Assessed on frequency & exposure</p>
+        </div>
+
+        <!-- Metric 4: IOGP Life-Saving Rule -->
+        <div class="p-4 glass-card rounded-2xl relative overflow-hidden border-blue-500/20">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">IOGP Life-Saving Rule</span>
+            <i class="fa-solid fa-shield-heart text-indigo-400 text-xs"></i>
+          </div>
+          <div class="mt-1">
+            <span id="cardIogpRule" class="text-sm font-bold text-white leading-tight block line-clamp-1">Hydraulic / Mechanical</span>
+          </div>
+          <div class="mt-2.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold">
+            <i class="fa-solid fa-book-bookmark text-[9px]"></i>
+            <span>OISD Standard 179</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-1">Regulatory safety mandate compliance</p>
+        </div>
+
+      </div>
+
+      <!-- MAIN CONTENT SPLIT (Left 2/3 Analysis, Right 1/3 Workflow) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2 Cols: Deep Forensics & Analysis -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- 01 // Field Observation & XAI Highlight Analysis -->
+          <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">01</span>
+                <h3 class="text-sm font-bold text-white tracking-wide">Field Observation & Semantic XAI Extraction</h3>
+              </div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-800 px-2 py-1 rounded">SHAP Token Weights</span>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[#090f1d] border border-slate-800 text-sm leading-relaxed text-slate-200">
+              <p id="revObservationText">
+                Equipment malfunction — <span class="token-highlight">High-pressure hydraulic hose</span> clamp <span class="token-highlight">slipped</span> during drill pipe makeup. Line <span class="token-highlight">whipped against guard</span>.
+              </p>
+            </div>
+
+            <!-- Token Legend -->
+            <div class="flex items-center gap-4 mt-3 text-[11px] text-slate-400">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded bg-amber-500/40 border border-amber-400"></span>
+                <span>SIF Trigger Tokens (Kinetic / Pressure / Height)</span>
+              </span>
+              <span class="text-slate-600">•</span>
+              <span>Confidence Threshold: <strong class="text-white">0.82</strong></span>
+            </div>
+          </div>
+
+          <!-- 02 // 3-Model Ensemble Intelligence Breakdown -->
+          <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">02</span>
+                <h3 class="text-sm font-bold text-white tracking-wide">3-Expert Ensemble Diagnostics (BERT + RoBERTa + XGBoost)</h3>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">Calibrated Soft-Voting Stack</span>
+            </div>
+
+            <div class="space-y-4">
+              
+              <!-- Model A: Unsafe Act -->
+              <div class="p-3.5 rounded-xl glass-panel-sub">
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-person-falling-burst text-slate-400"></i>
+                    <span class="font-bold text-white">Model A · Unsafe Act Specialist (Behavioral Deviation)</span>
+                  </div>
+                  <span id="scoreAct" class="font-bold mono text-slate-300">18.4%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barAct" class="bg-blue-500 h-full rounded-full" style="width: 18.4%;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1.5">Low probability of intentional procedural omission by operator</p>
+              </div>
+
+              <!-- Model B: Unsafe Condition -->
+              <div class="p-3.5 rounded-xl glass-panel-sub">
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                    <span class="font-bold text-white">Model B · Unsafe Condition Specialist (Mechanical & Environmental)</span>
+                  </div>
+                  <span id="scoreCond" class="font-bold mono text-amber-400">76.8%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barCond" class="bg-amber-500 h-full rounded-full" style="width: 76.8%;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1.5">Elevated degradation on clamp retention hardware</p>
+              </div>
+
+              <!-- Model C: Near-Miss -->
+              <div class="p-3.5 rounded-xl glass-panel-sub">
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-orange-500"></i>
+                    <span class="font-bold text-white">Model C · Near-Miss High-Energy Precursor Detector (SIF Engine)</span>
+                  </div>
+                  <span id="scoreNear" class="font-bold mono text-orange-400">93.3%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barNear" class="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full neon-bar" style="width: 93.3%;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1.5">Confirmed high-energy barrier failure with proximity to drill-crew personnel</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 03 // Multi-Vector Energy Hazard Matrix & Barrier Integrity -->
+          <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">03</span>
+                <h3 class="text-sm font-bold text-white tracking-wide">Multi-Vector Energy Identification & Barrier Integrity</h3>
+              </div>
+              <span class="text-[10px] font-bold text-slate-400 mono">OISD-179 MATRIX</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Energy Source Identified -->
+              <div class="p-4 rounded-xl glass-panel-sub">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Detected Energy Vectors</span>
+                <ul class="space-y-2 text-xs">
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-gauge text-orange-400"></i> Hydraulic Pressure (&gt;3000 PSI)</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">CRITICAL</span>
+                  </li>
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-circle-notch text-amber-400"></i> Whipping Line Kinetic Energy</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">HIGH</span>
+                  </li>
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-fire text-slate-500"></i> Flammable Atmospheric Gas</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">NOT PRESENT</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Safety Barriers Status -->
+              <div class="p-4 rounded-xl glass-panel-sub">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Protective Barrier Assessment</span>
+                <ul class="space-y-2 text-xs">
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span>Physical Equipment Guard</span>
+                    <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-check"></i> Intact / Intercepted</span>
+                  </li>
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span>Hose Whip-Check Cable</span>
+                    <span class="text-[10px] font-bold text-rose-400 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Compromised / Missing</span>
+                  </li>
+                  <li class="flex items-center justify-between text-slate-300">
+                    <span>Personnel Stand-off Red Zone</span>
+                    <span class="text-[10px] font-bold text-amber-400 flex items-center gap-1"><i class="fa-solid fa-clock"></i> Partial Exposure</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 04 // Immediate Tactical Action Plan -->
+          <div class="p-5 rounded-2xl border border-orange-500/40 bg-gradient-to-r from-orange-950/40 to-slate-900/60 shadow-xl relative overflow-hidden">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center text-lg font-bold shadow-[0_0_15px_rgba(234,88,12,0.5)] shrink-0">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-orange-400">Immediate Tactical Directive</span>
+                <h4 class="text-sm font-bold text-white">Recommended Engineering Protocol</h4>
+                <p id="revActionText" class="text-xs text-slate-300 leading-relaxed pt-1">
+                  Log corrective maintenance ticket, inspect equipment guards, and review operating procedure during shift handover.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Col: Command Workflow & Audit Stream -->
+        <div class="space-y-6">
+          
+          <!-- Command Override Box -->
+          <div class="glass-card rounded-2xl p-6 border-t-2 border-t-blue-500 shadow-2xl relative">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mono">COMMAND WORKFLOW</span>
+              <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+            </div>
+            
+            <h4 class="text-sm font-bold text-white mb-4">Authorize Status Override</h4>
+
+            <div class="space-y-3.5">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Lifecycle Status</label>
+                <select id="statusSelect" class="w-full p-3 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-blue-500 transition-all cursor-pointer">
+                  <option value="Submitted">Submitted (Under Triage)</option>
+                  <option value="Under Investigation">Under Investigation</option>
+                  <option value="Action Plan Assigned">Action Plan Assigned</option>
+                  <option value="Resolved">Resolved & Closed</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Assign Lead Investigator</label>
+                <input type="text" id="statusAssignee" placeholder="e.g., Rig Supv. Barua (Drilling)" class="w-full px-3.5 py-2.5 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Action Remarks</label>
+                <textarea id="statusRemarks" rows="2" placeholder="Record mandatory regulatory notes..." class="w-full p-3 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"></textarea>
+              </div>
+
+              <button onclick="commitStatusUpdate()" id="btnUpdateStatus" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-fingerprint"></i>
+                <span>Authorize Status Update</span>
+              </button>
+            </div>
+
+            <!-- Mandatory Verification -->
+            <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] text-slate-400 space-y-1 font-mono">
+              <p><i class="fa-solid fa-lock text-slate-500 mr-1"></i> OIL EHS Protocol OISD-179</p>
+              <p><i class="fa-solid fa-network-wired text-slate-500 mr-1"></i> Real-time Sync to Rig Database</p>
+            </div>
+          </div>
+
+          <!-- Officer Internal Notes Stream -->
+          <div class="glass-card rounded-2xl p-6 shadow-xl">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-list text-orange-400"></i> Officer Notes
+              </h4>
+              <span id="notesCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 mono">0 Entries</span>
+            </div>
+
+            <div id="notesContainer" class="space-y-2.5 max-h-56 overflow-y-auto pr-1 mb-3.5">
+              <!-- Rendered notes -->
+            </div>
+
+            <div class="flex gap-2">
+              <input type="text" id="newNoteInput" placeholder="Add confidential inspection note..." class="flex-1 px-3 py-2 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all">
+              <button onclick="postOfficerNote()" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-[0_0_12px_rgba(234,88,12,0.4)] transition-all">
+                <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                <span>Post</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    let activeRev = null;
+
+    function toggleOfficerProfileModal() {
+      document.getElementById('officerProfileModal').classList.toggle('hidden');
+    }
+
+    function getReports() {
+      const stored = localStorage.getItem('oil_reports_db');
+      if (stored) return JSON.parse(stored);
+
+      const defaultData = [
+        {
+          id: "OG-2026-3527",
+          date: "9/9/2026, 1:03:03 PM",
+          facility: "Duliajan Oilfield · Drilling Operations",
+          reporter: "oil-79655",
+          category: "Near-Miss",
+          risk: "Medium Risk",
+          sifProb: "48.5%",
+          iogp: "Hydraulic / Mechanical",
+          text: "Equipment malfunction — High-pressure hydraulic hose clamp slipped during drill pipe makeup. Line whipped against guard.",
+          bert: 93.3, yolo: 91.9, energy: 92.9,
+          action: "Log corrective maintenance ticket, inspect equipment guards, and review operating procedure during shift handover.",
+          status: "Submitted",
+          notes: [{ user: "oil-79655", time: "1:03 PM", text: "Logged via Rig Terminal" }]
+        },
+        {
+          id: "OG-2026-3528",
+          date: "9/9/2026, 1:45:12 PM",
+          facility: "Digboi Refinery · Crude Distillation Unit",
+          reporter: "oil-88210",
+          category: "Unsafe Condition",
+          risk: "High Risk",
+          sifProb: "96.4%",
+          iogp: "Energy Isolation / Hot Work",
+          text: "Heavy flange pitting corrosion detected on high pressure sour gas line near furnace burner ignition source.",
+          bert: 95.8, yolo: 93.1, energy: 98.2,
+          action: "Issue immediate Cold Work stop, depressurize section, and deploy ultrasonic thickness testing crew.",
+          status: "Under Investigation",
+          notes: [{ user: "oil-88210", time: "1:45 PM", text: "Inspection report logged" }]
+        },
+        {
+          id: "OG-2026-3529",
+          date: "9/9/2026, 2:10:00 PM",
+          facility: "Naharkatiya Pumping Station · Civil Works",
+          reporter: "oil-34112",
+          category: "Unsafe Act",
+          risk: "High Risk",
+          sifProb: "91.8%",
+          iogp: "Working at Height",
+          text: "Scaffolding contractor observed modifying intermediate ledger board at 11 meters elevation without tethered safety harness.",
+          bert: 94.2, yolo: 90.5, energy: 92.0,
+          action: "Stop work order issued immediately. Retrain scaffolding team on dual lanyard latch protocols.",
+          status: "Under Investigation",
+          notes: [{ user: "oil-34112", time: "2:10 PM", text: "Report submitted" }]
+        },
+        {
+          id: "OG-2026-3530",
+          date: "9/9/2026, 2:50:30 PM",
+          facility: "Moran Pipeline Corridor · Mechanical Maintenance",
+          reporter: "oil-11942",
+          category: "Unsafe Condition",
+          risk: "Low Risk",
+          sifProb: "6.2%",
+          iogp: "Housekeeping",
+          text: "Empty hydraulic oil containers and spent absorbent pads left adjacent to valve station gate.",
+          bert: 84.1, yolo: 79.5, energy: 81.0,
+          action: "Transfer drums to designated hazardous waste disposal holding yard.",
+          status: "Resolved",
+          notes: [{ user: "oil-11942", time: "2:50 PM", text: "Cleaned up during shift" }]
+        }
+      ];
+
+      localStorage.setItem('oil_reports_db', JSON.stringify(defaultData));
+      return defaultData;
+    }
+
+    function renderAllReports() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const reports = getReports();
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      const selectedRisk = document.getElementById('riskFilter').value;
+      const selectedCategory = document.getElementById('categoryFilter').value;
+
+      let hr = 0, mr = 0, lr = 0, inv = 0, res = 0;
+      reports.forEach(r => {
+        if (r.risk.includes('High')) hr++;
+        else if (r.risk.includes('Medium')) mr++;
+        else if (r.risk.includes('Low')) lr++;
+        if (r.status === 'Under Investigation') inv++;
+        if (r.status === 'Resolved') res++;
+      });
+      document.getElementById('statHigh').innerText = hr;
+      document.getElementById('statMed').innerText = mr;
+      document.getElementById('statLow').innerText = lr;
+      document.getElementById('statInves').innerText = inv;
+      document.getElementById('statResolved').innerText = res;
+      document.getElementById('statTotal').innerText = reports.length;
+
+      const filtered = reports.filter(r => {
+        const matchesSearch = 
+          r.id.toLowerCase().includes(searchQuery) ||
+          r.facility.toLowerCase().includes(searchQuery) ||
+          r.text.toLowerCase().includes(searchQuery) ||
+          r.reporter.toLowerCase().includes(searchQuery);
+
+        const matchesRisk = (selectedRisk === 'ALL') || (r.risk === selectedRisk);
+        const matchesCategory = (selectedCategory === 'ALL') || (r.category === selectedCategory);
+
+        return matchesSearch && matchesRisk && matchesCategory;
+      });
+
+      const tb = document.getElementById('reportsTableBody');
+      const noResults = document.getElementById('noResults');
+      tb.innerHTML = "";
+
+      if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      } else {
+        noResults.classList.add('hidden');
+      }
+
+      filtered.forEach(r => {
+        let rc = "bg-amber-500/10 text-amber-400 border border-amber-500/30";
+        if (r.risk.includes('High')) rc = "bg-rose-500/10 text-rose-400 border border-rose-500/30";
+        if (r.risk.includes('Low')) rc = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
+        let sc = "text-slate-400";
+        if (r.status === 'Under Investigation') sc = "text-blue-400 font-semibold";
+        if (r.status === 'Resolved') sc = "text-emerald-400 font-semibold";
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 cursor-pointer transition-colors";
+        tr.onclick = () => openReport(r.id);
+        tr.innerHTML = `
+          <td class="px-6 py-4 mono font-bold text-white">${r.id}</td>
+          <td class="px-6 py-4 text-slate-300 font-medium">${r.facility}</td>
+          <td class="px-6 py-4 text-slate-400 font-medium">${r.category}</td>
+          <td class="px-6 py-4">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-bold ${rc}">
+              ${r.risk}
+            </span>
+          </td>
+          <td class="px-6 py-4 font-bold text-orange-400">${r.sifProb}</td>
+          <td class="px-6 py-4 ${sc}">${r.status}</td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('riskFilter').value = 'ALL';
+      document.getElementById('categoryFilter').value = 'ALL';
+      applyFilters();
+    }
+
+    function openReport(id) {
+      const reps = getReports();
+      activeRev = reps.find(r => r.id === id);
+      if (!activeRev) return;
+
+      document.getElementById('queueView').classList.add('hidden');
+      document.getElementById('reviewView').classList.remove('hidden');
+
+      // Top Header
+      document.getElementById('revId').innerText = activeRev.id;
+      document.getElementById('revMeta').innerHTML = `<i class="fa-solid fa-location-dot text-slate-500"></i> ${activeRev.facility} · ${activeRev.date}`;
+      document.getElementById('revReporterBadge').innerText = `Reporter: ${activeRev.reporter}`;
+
+      // Risk Pill
+      let pillStyle = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+      if (activeRev.risk.includes("High")) pillStyle = "bg-rose-500/20 text-rose-300 border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.3)]";
+      if (activeRev.risk.includes("Low")) pillStyle = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+      document.getElementById('revRiskPill').innerHTML = `
+        <span class="px-3.5 py-1 rounded-full text-xs font-bold border ${pillStyle} flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+          <span>${activeRev.risk}</span>
+        </span>
+      `;
+
+      // 4 Metric Strip Values
+      document.getElementById('cardSifProb').innerText = activeRev.sifProb;
+      const numProb = parseFloat(activeRev.sifProb);
+      document.getElementById('cardSifBar').style.width = activeRev.sifProb;
+      
+      const sevLabel = document.getElementById('cardSifSeverity');
+      if (numProb >= 70) {
+        sevLabel.innerText = "CRITICAL";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30";
+      } else if (numProb >= 30) {
+        sevLabel.innerText = "ELEVATED";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30";
+      } else {
+        sevLabel.innerText = "ROUTINE";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+      }
+
+      document.getElementById('cardCategory').innerText = activeRev.category;
+      document.getElementById('cardCategorySub').innerText = activeRev.category === "Near-Miss" ? "High-Energy Close Call" : (activeRev.category === "Unsafe Act" ? "Human Behavioral Protocol" : "Physical Hazard Exposure");
+      document.getElementById('cardRiskTier').innerText = activeRev.risk;
+      document.getElementById('cardIogpRule').innerText = activeRev.iogp;
+
+      // Observation text with simulated token highlights
+      const rawText = activeRev.text;
+      const highlighted = rawText
+        .replace(/(high-pressure|hydraulic hose|flange|sour gas|scaffolding|ledger board)/gi, '<span class="token-highlight">$1</span>')
+        .replace(/(slipped|corrosion|ignition source|without tethered safety harness)/gi, '<span class="token-highlight">$1</span>')
+        .replace(/(whipped against guard|11 meters elevation)/gi, '<span class="token-highlight font-bold">$1</span>');
+      document.getElementById('revObservationText').innerHTML = highlighted;
+
+      // Model breakdown calculations
+      let actP = 12.0, condP = 76.0, nearP = 93.3;
+      if (activeRev.category === "Unsafe Act") { actP = 94.2; condP = 32.1; nearP = 85.0; }
+      if (activeRev.category === "Unsafe Condition") { actP = 11.5; condP = 96.2; nearP = 72.0; }
+
+      document.getElementById('scoreAct').innerText = `${actP.toFixed(1)}%`;
+      document.getElementById('barAct').style.width = `${actP}%`;
+      document.getElementById('scoreCond').innerText = `${condP.toFixed(1)}%`;
+      document.getElementById('barCond').style.width = `${condP}%`;
+      document.getElementById('scoreNear').innerText = `${nearP.toFixed(1)}%`;
+      document.getElementById('barNear').style.width = `${nearP}%`;
+
+      document.getElementById('revActionText').innerText = activeRev.action;
+      document.getElementById('statusSelect').value = activeRev.status;
+
+      renderNotes();
+    }
+
+    function showQueueView() {
+      document.getElementById('reviewView').classList.add('hidden');
+      document.getElementById('queueView').classList.remove('hidden');
+      applyFilters();
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notesContainer');
+      const countBadge = document.getElementById('notesCountBadge');
+      container.innerHTML = "";
+
+      const notes = activeRev.notes || [];
+      countBadge.innerText = `${notes.length} Entries`;
+
+      if (notes.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic py-2">No notes recorded for this telemetry ID.</p>`;
+        return;
+      }
+
+      notes.forEach(n => {
+        const item = document.createElement('div');
+        item.className = "p-2.5 rounded-xl bg-[#090f1d] border border-slate-800 text-xs";
+        item.innerHTML = `
+          <div class="flex justify-between font-bold text-[10px] text-slate-400 mb-0.5 font-mono">
+            <span class="text-orange-400">${n.user}</span>
+            <span>${n.time}</span>
+          </div>
+          <p class="text-slate-300 font-medium">${n.text}</p>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function postOfficerNote() {
+      const input = document.getElementById('newNoteInput');
+      const text = input.value.trim();
+      if (!text || !activeRev) return;
+
+      if (!activeRev.notes) activeRev.notes = [];
+      activeRev.notes.push({
+        user: "Safety Officer (Lead)",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: text
+      });
+
+      updateReportInDb(activeRev);
+      input.value = "";
+      renderNotes();
+    }
+
+    function commitStatusUpdate() {
+      if (!activeRev) return;
+      const newStatus = document.getElementById('statusSelect').value;
+      const assignee = document.getElementById('statusAssignee').value.trim();
+      const remarks = document.getElementById('statusRemarks').value.trim();
+
+      activeRev.status = newStatus;
+      if (!activeRev.notes) activeRev.notes = [];
+
+      let noteContent = `Status updated to [${newStatus}]`;
+      if (assignee) noteContent += ` · Assigned to: ${assignee}`;
+      if (remarks) noteContent += ` · Remarks: ${remarks}`;
+
+      activeRev.notes.push({
+        user: "Command Authorization",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: noteContent
+      });
+
+      updateReportInDb(activeRev);
+      renderNotes();
+      document.getElementById('statusAssignee').value = "";
+      document.getElementById('statusRemarks').value = "";
+
+      const b = document.getElementById('btnUpdateStatus');
+      b.innerHTML = `<i class="fa-solid fa-check"></i> Status Authorized & Synced`;
+      b.className = "w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2";
+      setTimeout(() => {
+        b.innerHTML = `<i class="fa-solid fa-fingerprint"></i> <span>Authorize Status Update</span>`;
+        b.className = "w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 transition-all";
+      }, 1500);
+    }
+
+    function updateReportInDb(rep) {
+      const reps = getReports();
+      const idx = reps.findIndex(r => r.id === rep.id);
+      if (idx !== -1) {
+        reps[idx] = rep;
+        localStorage.setItem('oil_reports_db', JSON.stringify(reps));
+      }
+    }
+
+    // Initial run
+    applyFilters();
+  </script>
+</body>
+</html>
