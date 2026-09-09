@@ -1,11 +1,6 @@
-fastapi
-uvicorn[standard]
-python-multipart
-openai-whisper
-easyocr
-sentence-transformers
-joblib
-numpy
+streamlit>=1.30.0
 pandas
-scikit-learn==1.9.0
+numpy
+joblib
+scikit-learn
 xgboost

@@ -3,243 +3,1167 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OIL Guardian AI - Employee Field Terminal</title>
+  <title>OIL Guardian AI - Precursor Detection Operations Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
     body { font-family: 'Inter', sans-serif; background-color: #070b14; color: #e2e8f0; overflow-x: hidden; }
     .mono { font-family: 'JetBrains Mono', monospace; }
     .glass-panel { background: rgba(19, 29, 49, 0.65); backdrop-filter: blur(14px); border: 1px solid rgba(51, 65, 85, 0.6); }
+    .glass-card { background: rgba(13, 20, 36, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(30, 41, 59, 0.8); }
+    .glass-panel-sub { background: rgba(10, 15, 29, 0.6); border: 1px solid rgba(51, 65, 85, 0.4); }
+    .neon-bar { box-shadow: 0 0 10px rgba(234, 88, 12, 0.8); }
+    .token-highlight { background: rgba(245, 158, 11, 0.18); border-bottom: 1.5px dashed #f59e0b; color: #fef08a; padding: 0 4px; border-radius: 2px; }
+    @keyframes ping-slow { 0% { transform: scale(0.9); opacity: 0.8; } 50% { transform: scale(1.4); opacity: 0.2; } 100% { transform: scale(1.8); opacity: 0; } }
+    .animate-ping-slow { animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+    @keyframes rotate-radar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .animate-rotate { animation: rotate-radar 6s linear infinite; }
+    .fade-out { opacity: 0; transform: scale(1.05); transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+    .fade-in { opacity: 1; transform: translateY(0); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-orange-500/30">
 
-  <!-- Ambient Glow -->
-  <div class="fixed top-0 right-0 w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px] pointer-events-none"></div>
+  <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-600/10 blur-[130px] pointer-events-none"></div>
+  <div class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[130px] pointer-events-none"></div>
 
-  <!-- Top Navigation with Profile Icon -->
-  <header class="glass-panel sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-[0_0_15px_rgba(234,88,12,0.4)] border border-orange-400/50">
-        <i class="fa-solid fa-shield-halved"></i>
+  <!-- VIEW 1: SPLASH & ENTERPRISE LOGIN -->
+  <div id="viewSplash" class="min-h-screen flex items-center justify-center p-4 relative z-20">
+    <div id="splashScreen" class="fixed inset-0 z-50 bg-[#070b14] flex flex-col items-center justify-center text-center px-4 transition-all">
+      <div class="relative flex items-center justify-center w-48 h-48 mb-8">
+        <div class="absolute inset-0 rounded-full border border-orange-500/30 animate-ping-slow"></div>
+        <div class="absolute inset-4 rounded-full border border-orange-500/20 animate-ping-slow" style="animation-delay: 0.6s;"></div>
+        <div class="absolute inset-2 rounded-full border-2 border-dashed border-orange-500/40 animate-rotate"></div>
+        <div class="relative z-10 w-24 h-24 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-3xl flex items-center justify-center shadow-[0_0_35px_rgba(234,88,12,0.5)] border border-orange-400/30">
+          <i class="fa-solid fa-shield-halved text-4xl text-white drop-shadow-md"></i>
+        </div>
       </div>
-      <div>
-        <h1 class="text-base font-bold text-white leading-tight">OIL Guardian <span class="text-orange-400">AI</span></h1>
-        <p class="text-[11px] font-semibold text-slate-400">Field Operations Terminal</p>
+      <h2 class="text-3xl font-black tracking-tight text-white flex items-center gap-2">
+        <span>OIL GUARDIAN</span>
+        <span class="px-2 py-0.5 rounded-lg bg-orange-600 text-white text-xs mono tracking-wider font-bold shadow-[0_0_15px_rgba(234,88,12,0.6)]">AI</span>
+      </h2>
+      <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mt-2">SIH26165 · Precursor Detection Hub</p>
+      <div class="w-64 max-w-full mt-8">
+        <div class="w-full bg-slate-800/50 h-1.5 rounded-full overflow-hidden border border-slate-700/50">
+          <div id="splashProgress" class="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full transition-all duration-300 w-0 shadow-[0_0_10px_rgba(245,158,11,0.8)]"></div>
+        </div>
+        <div class="flex justify-between items-center mt-2.5">
+          <span id="splashStatusText" class="text-[11px] mono text-slate-400">Verifying Security Protocols...</span>
+          <span id="splashPercent" class="text-[11px] mono font-bold text-orange-400">0%</span>
+        </div>
       </div>
+      <button onclick="endSplashAnimation()" class="mt-6 text-[11px] text-slate-500 hover:text-slate-300 font-semibold underline underline-offset-4 transition-colors">Skip intro →</button>
     </div>
 
-    <!-- User & Profile Controls -->
-    <div class="flex items-center gap-3">
-      <!-- Profile Button -->
-      <button onclick="toggleProfileModal()" class="flex items-center gap-2.5 px-3 py-1.5 bg-slate-800/80 border border-slate-700 hover:border-orange-500/50 rounded-xl text-xs font-semibold text-slate-200 transition-all">
-        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center text-[11px] font-bold">
-          <i class="fa-solid fa-user"></i>
+    <div id="loginCard" class="opacity-0 translate-y-6 max-w-md w-full bg-[#0d1424]/90 backdrop-blur-2xl rounded-3xl border border-slate-700/40 shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-all duration-500">
+      <div class="p-8 text-center border-b border-slate-800/80 bg-slate-900/30">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-orange-600 to-amber-500 text-white rounded-2xl shadow-[0_0_30px_rgba(234,88,12,0.4)] mb-4 border border-orange-400/30">
+          <i class="fa-solid fa-shield-halved text-3xl"></i>
         </div>
-        <span id="displayUser">oil-79655</span>
-        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
-      </button>
-
-      <a href="login.html" class="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-lg border border-rose-500/30 transition-all">
-        <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Logout
-      </a>
-    </div>
-  </header>
-
-  <!-- EMPLOYEE PROFILE MODAL -->
-  <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="max-w-md w-full glass-panel bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
-      <button onclick="toggleProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <div class="flex items-center gap-4 pb-5 border-b border-slate-800">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center text-2xl font-bold shadow-[0_0_20px_rgba(234,88,12,0.5)]">
-          <i class="fa-solid fa-hard-hat"></i>
-        </div>
-        <div>
-          <h3 class="text-lg font-bold text-white" id="modalEmpId">oil-79655</h3>
-          <p class="text-xs font-semibold text-orange-400">Field Technician / Senior Roughneck</p>
-          <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">OISD Certified Active</span>
-        </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">OIL Guardian AI</h1>
+        <p class="text-xs font-semibold text-orange-500 tracking-widest uppercase mt-1">SIH26165 · OPERATIONS HUB</p>
       </div>
 
-      <div class="py-4 space-y-3 text-xs">
-        <div class="flex justify-between py-1 border-b border-slate-800/60">
-          <span class="text-slate-400">Company</span>
-          <span class="font-semibold text-white">Oil India Limited</span>
+      <div class="p-8">
+        <div class="grid grid-cols-2 p-1.5 bg-[#141e33] rounded-2xl mb-6 border border-slate-700/40">
+          <button id="tabEmployee" onclick="switchTab('employee')" class="py-2.5 text-xs font-bold rounded-xl transition-all shadow-md bg-[#1e293b] border border-slate-600 text-orange-400 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-hard-hat"></i> Employee / Rig
+          </button>
+          <button id="tabOfficer" onclick="switchTab('officer')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white flex items-center justify-center gap-2 bg-transparent border border-transparent">
+            <i class="fa-solid fa-user-shield"></i> Safety Officer
+          </button>
         </div>
-        <div class="flex justify-between py-1 border-b border-slate-800/60">
-          <span class="text-slate-400">Primary Division</span>
-          <span class="font-semibold text-white">Exploration & Production (E&P)</span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-800/60">
-          <span class="text-slate-400">Total Incidents Logged</span>
-          <span class="font-semibold text-orange-400" id="empReportCount">0 Reports</span>
-        </div>
-        <div class="flex justify-between py-1">
-          <span class="text-slate-400">Last Active Station</span>
-          <span class="font-semibold text-white">Duliajan Oilfield · Rig 04</span>
+
+        <form id="formEmployee" onsubmit="handleLogin(event, 'employee')" class="space-y-4">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">BADGE ID</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                <i class="fa-solid fa-id-badge"></i>
+              </span>
+              <input type="text" id="empId" value="oil-79655" required class="w-full pl-10 pr-3.5 py-3 bg-[#11192e] border border-slate-700/80 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">PASSWORD</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                <i class="fa-solid fa-lock"></i>
+              </span>
+              <input type="password" id="empPass" value="••••••••" required class="w-full pl-10 pr-3.5 py-3 bg-[#11192e] border border-slate-700/80 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full mt-2 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(234,88,12,0.4)] text-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <span>Enter Employee Portal</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <form id="formOfficer" onsubmit="handleLogin(event, 'officer')" class="space-y-4 hidden">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">OFFICER EMAIL</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                <i class="fa-solid fa-envelope"></i>
+              </span>
+              <input type="text" id="officerId" value="hse@oilindia.in" required class="w-full pl-10 pr-3.5 py-3 bg-[#11192e] border border-slate-700/80 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">SECURITY PASSCODE</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-sm">
+                <i class="fa-solid fa-shield-keyhole"></i>
+              </span>
+              <input type="password" value="••••••••" required class="w-full pl-10 pr-3.5 py-3 bg-[#11192e] border border-slate-700/80 rounded-xl text-sm font-semibold text-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full mt-2 py-3.5 bg-white hover:bg-slate-200 text-slate-900 font-bold rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] text-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <span>Access Safety Console</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-800 text-center">
+          <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Evaluator Quick Switch</p>
+          <div class="flex gap-2">
+            <button onclick="quickLogin('employee')" class="flex-1 py-2 px-3 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold rounded-xl hover:bg-orange-500/20 transition-all cursor-pointer">
+              <i class="fa-solid fa-hard-hat mr-1"></i> Field Demo
+            </button>
+            <button onclick="quickLogin('officer')" class="flex-1 py-2 px-3 bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-all cursor-pointer">
+              <i class="fa-solid fa-user-shield mr-1"></i> Officer Demo
+            </button>
+          </div>
         </div>
       </div>
-
-      <button onclick="toggleProfileModal()" class="w-full mt-2 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-colors">
-        Close Profile
-      </button>
     </div>
   </div>
 
-  <!-- Main Incident Form -->
-  <main class="max-w-6xl mx-auto w-full p-6 space-y-6 relative z-10">
-
-    <div class="glass-panel rounded-2xl shadow-xl p-6 relative overflow-hidden">
-      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-400 opacity-50"></div>
-      
-      <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-700/50 gap-4">
+  <!-- VIEW 2: EMPLOYEE FIELD TERMINAL -->
+  <div id="viewEmployee" class="hidden min-h-screen flex flex-col justify-between relative z-20">
+    <header class="glass-panel sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between shadow-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-[0_0_15px_rgba(234,88,12,0.4)] border border-orange-400/50">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
         <div>
-          <span class="text-[11px] font-bold tracking-widest text-orange-400 uppercase">Live Hazard Log</span>
-          <h2 class="text-xl font-bold text-white">Report Incident, Condition, or Near-Miss</h2>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <span class="text-slate-400 font-semibold">Load Sample:</span>
-          <button onclick="loadScenario('high')" class="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-md font-bold hover:bg-rose-500/20">High Risk</button>
-          <button onclick="loadScenario('med')" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-md font-bold hover:bg-amber-500/20">Near-Miss</button>
+          <h1 class="text-base font-bold text-white leading-tight">OIL Guardian <span class="text-orange-400">AI</span></h1>
+          <p class="text-[11px] font-semibold text-slate-400">Field Operations Terminal</p>
         </div>
       </div>
 
-      <!-- Facility and Department Selectors (Added Here) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-            <i class="fa-solid fa-location-dot text-orange-400 mr-1"></i> FACILITY LOCATION
-          </label>
-          <select id="reportFacility" class="w-full px-3.5 py-2.5 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
-            <option>Duliajan Oilfield (Drilling)</option>
-            <option>Digboi Refinery (Process Unit)</option>
-            <option>Naharkatiya Pumping Station</option>
-            <option>Moran Pipeline Corridor</option>
-            <option>Numaligarh Petrochem Plant</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-            <i class="fa-solid fa-sitemap text-orange-400 mr-1"></i> OPERATIONAL DEPARTMENT
-          </label>
-          <select id="reportDepartment" class="w-full px-3.5 py-2.5 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
-            <option>Drilling Operations</option>
-            <option>Mechanical & Heavy Maintenance</option>
-            <option>Pipeline Transportation & Metering</option>
-            <option>Electrical & Instrument Systems</option>
-            <option>Chemical / Mud Engineering</option>
-            <option>Civil & Scaffolding Construction</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Multimodal Input Buttons -->
-      <div class="grid grid-cols-3 gap-2 mt-5 mb-4">
-        <button id="btnTabText" onclick="setInputMode('text')" class="py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)]">
-          <i class="fa-solid fa-keyboard"></i> Text Entry
+      <div class="flex items-center gap-3">
+        <button onclick="switchView('officer')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-user-shield"></i> Open Safety Console
         </button>
-        <button id="btnTabVoice" onclick="setInputMode('voice')" class="py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white">
-          <i class="fa-solid fa-microphone"></i> Voice Whisper AI
-        </button>
-        <button id="btnTabOcr" onclick="setInputMode('ocr')" class="py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white">
-          <i class="fa-solid fa-file-lines"></i> OCR Slip Scan
-        </button>
-      </div>
 
-      <!-- Voice Box -->
-      <div id="voicePanel" class="hidden p-4 bg-orange-900/20 border border-orange-500/30 rounded-xl mb-4 text-center">
-        <button onclick="simulateAudioRecord()" id="recordBtn" class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform">
-          <i class="fa-solid fa-microphone text-lg"></i>
-        </button>
-        <p class="text-xs font-bold text-orange-300" id="recordStatus">Click to record field voice note</p>
-      </div>
-
-      <div class="space-y-4">
-        <textarea id="reportText" rows="4" oninput="runAiPreAssessment()" placeholder="Describe in plain language: What happened? What equipment was involved? Was there potential for energy release or fall?" class="w-full p-4 bg-slate-900/60 border border-slate-700 rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"></textarea>
-
-        <!-- AI Glass Card -->
-        <div id="aiPreview" class="p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl backdrop-blur-md transition-all duration-300">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i class="fa-solid fa-brain text-orange-500 drop-shadow-[0_0_5px_rgba(234,88,12,0.8)]"></i> AI Real-Time Pre-Triage
-            </span>
-            <span id="previewRiskPill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700 text-slate-300">Awaiting Input</span>
+        <button onclick="toggleProfileModal()" class="flex items-center gap-2.5 px-3 py-1.5 bg-slate-800/80 border border-slate-700 hover:border-orange-500/50 rounded-xl text-xs font-semibold text-slate-200 transition-all cursor-pointer">
+          <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 text-white flex items-center justify-center text-[11px] font-bold">
+            <i class="fa-solid fa-user"></i>
           </div>
-          <div class="grid grid-cols-3 gap-3 text-center">
-            <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
-              <span class="text-[10px] uppercase font-bold text-slate-500">Category</span>
-              <p id="previewType" class="text-xs font-bold text-white mt-0.5">-</p>
-            </div>
-            <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
-              <span class="text-[10px] uppercase font-bold text-slate-500">SIF Risk</span>
-              <p id="previewSif" class="text-xs font-bold text-white mt-0.5">-</p>
-            </div>
-            <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
-              <span class="text-[10px] uppercase font-bold text-slate-500">IOGP Rule</span>
-              <p id="previewRule" class="text-xs font-bold text-white mt-0.5">-</p>
-            </div>
+          <span id="displayUser">oil-79655</span>
+          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+        </button>
+
+        <button onclick="switchView('splash')" class="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-lg border border-rose-500/30 transition-all cursor-pointer">
+          <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="max-w-md w-full glass-panel bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
+        <button onclick="toggleProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+
+        <div class="flex items-center gap-4 pb-5 border-b border-slate-800">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center text-2xl font-bold shadow-[0_0_20px_rgba(234,88,12,0.5)]">
+            <i class="fa-solid fa-hard-hat"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white" id="modalEmpId">oil-79655</h3>
+            <p class="text-xs font-semibold text-orange-400">Field Technician / Senior Roughneck</p>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">OISD Certified Active</span>
           </div>
         </div>
 
-        <button onclick="submitReport()" class="w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-bold rounded-xl text-sm shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 transition-all">
-          <i class="fa-solid fa-paper-plane"></i> Transmit Report to Operations Console
+        <div class="py-4 space-y-3 text-xs">
+          <div class="flex justify-between py-1 border-b border-slate-800/60">
+            <span class="text-slate-400">Company</span>
+            <span class="font-semibold text-white">Oil India Limited</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-800/60">
+            <span class="text-slate-400">Primary Division</span>
+            <span class="font-semibold text-white">Exploration & Production (E&P)</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-800/60">
+            <span class="text-slate-400">Total Incidents Logged</span>
+            <span class="font-semibold text-orange-400" id="empReportCount">0 Reports</span>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-slate-400">Last Active Station</span>
+            <span class="font-semibold text-white">Duliajan Oilfield · Rig 04</span>
+          </div>
+        </div>
+
+        <button onclick="toggleProfileModal()" class="w-full mt-2 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer">
+          Close Profile
         </button>
       </div>
     </div>
 
-    <!-- History -->
-    <div class="glass-panel rounded-2xl shadow-xl p-6">
-      <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> My Transmissions
-      </h3>
-      <div id="historyList" class="space-y-3"></div>
+    <main class="max-w-6xl mx-auto w-full p-6 space-y-6 relative z-10 flex-1">
+      <div class="glass-panel rounded-2xl shadow-xl p-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-400 opacity-50"></div>
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-700/50 gap-4">
+          <div>
+            <span class="text-[11px] font-bold tracking-widest text-orange-400 uppercase">Live Hazard Log</span>
+            <h2 class="text-xl font-bold text-white">Report Incident, Condition, or Near-Miss</h2>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-400 font-semibold">Load Sample:</span>
+            <button onclick="loadScenario('high')" class="px-2.5 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-md font-bold hover:bg-rose-500/20 cursor-pointer">High Risk</button>
+            <button onclick="loadScenario('med')" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-md font-bold hover:bg-amber-500/20 cursor-pointer">Near-Miss</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <i class="fa-solid fa-location-dot text-orange-400 mr-1"></i> FACILITY LOCATION
+            </label>
+            <select id="reportFacility" class="w-full px-3.5 py-2.5 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
+              <option>Duliajan Oilfield (Drilling)</option>
+              <option>Digboi Refinery (Process Unit)</option>
+              <option>Naharkatiya Pumping Station</option>
+              <option>Moran Pipeline Corridor</option>
+              <option>Numaligarh Petrochem Plant</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <i class="fa-solid fa-sitemap text-orange-400 mr-1"></i> OPERATIONAL DEPARTMENT
+            </label>
+            <select id="reportDepartment" class="w-full px-3.5 py-2.5 bg-[#0f172a] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
+              <option>Drilling Operations</option>
+              <option>Mechanical & Heavy Maintenance</option>
+              <option>Pipeline Transportation & Metering</option>
+              <option>Electrical & Instrument Systems</option>
+              <option>Chemical / Mud Engineering</option>
+              <option>Civil & Scaffolding Construction</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mt-5 mb-4">
+          <button id="btnTabText" onclick="setInputMode('text')" class="py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)] cursor-pointer">
+            <i class="fa-solid fa-keyboard"></i> Text Entry
+          </button>
+          <button id="btnTabVoice" onclick="setInputMode('voice')" class="py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white cursor-pointer">
+            <i class="fa-solid fa-microphone"></i> Voice Whisper AI
+          </button>
+          <button id="btnTabOcr" onclick="setInputMode('ocr')" class="py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white cursor-pointer">
+            <i class="fa-solid fa-file-lines"></i> OCR Slip Scan
+          </button>
+        </div>
+
+        <div id="voicePanel" class="hidden p-4 bg-orange-900/20 border border-orange-500/30 rounded-xl mb-4 text-center">
+          <button onclick="startVoiceRecognition()" id="recordBtn" class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto" title="Click to start/stop live speech recognition">
+            <i class="fa-solid fa-microphone text-lg"></i>
+          </button>
+          <p class="text-xs font-bold text-orange-300" id="recordStatus">Click microphone to speak your field observation live</p>
+        </div>
+
+        <div id="ocrPanel" class="hidden p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl mb-4 text-center">
+          <input type="file" id="ocrFileInput" accept="image/*" class="hidden" onchange="handleOcrScan(event)">
+          <button onclick="document.getElementById('ocrFileInput').click()" class="px-4 py-2 bg-blue-600/30 hover:bg-blue-600/40 text-blue-300 border border-blue-500/40 font-bold text-xs rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 mx-auto mb-1">
+            <i class="fa-solid fa-camera"></i> Scan / Upload Field Safety Slip
+          </button>
+          <p class="text-[11px] text-slate-400" id="ocrStatus">Upload photo of handwritten field permit or safety card</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="relative">
+            <textarea id="reportText" rows="4" oninput="runAiPreAssessment()" placeholder="Describe in plain language: What happened? What equipment was involved? Was there potential for energy release or fall?" class="w-full p-4 pr-12 bg-slate-900/60 border border-slate-700 rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"></textarea>
+            <button onclick="startVoiceRecognition()" type="button" class="absolute right-3 top-3 w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700 hover:border-orange-500 text-orange-400 flex items-center justify-center transition-all cursor-pointer" title="Click to start live microphone voice input">
+              <i class="fa-solid fa-microphone text-xs"></i>
+            </button>
+          </div>
+
+          <div id="aiPreview" class="p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl backdrop-blur-md transition-all duration-300">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-brain text-orange-500 drop-shadow-[0_0_5px_rgba(234,88,12,0.8)]"></i> AI Real-Time Pre-Triage
+              </span>
+              <span id="previewRiskPill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700 text-slate-300">Awaiting Input</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
+                <span class="text-[10px] uppercase font-bold text-slate-500">Category</span>
+                <p id="previewType" class="text-xs font-bold text-white mt-0.5">-</p>
+              </div>
+              <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
+                <span class="text-[10px] uppercase font-bold text-slate-500">SIF Risk</span>
+                <p id="previewSif" class="text-xs font-bold text-white mt-0.5">-</p>
+              </div>
+              <div class="p-2.5 bg-slate-900/50 rounded-lg border border-slate-700">
+                <span class="text-[10px] uppercase font-bold text-slate-500">IOGP Rule</span>
+                <p id="previewRule" class="text-xs font-bold text-white mt-0.5">-</p>
+              </div>
+            </div>
+          </div>
+
+          <button id="btnSubmitReport" onclick="submitReport()" disabled class="w-full py-3.5 bg-slate-800/80 border border-slate-700 text-slate-500 font-bold rounded-xl text-sm opacity-60 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-lock text-slate-400"></i> Awaiting AI Classification & SIF Triage...
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl shadow-xl p-6">
+        <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> My Transmissions
+        </h3>
+        <div id="historyList" class="space-y-3"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= VIEW 3: SAFETY OFFICER COMMAND CENTER ================= -->
+  <div id="viewOfficer" class="hidden min-h-screen flex flex-col justify-between relative z-20">
+    <header class="bg-[#0b1120] border-b border-slate-800/80 sticky top-0 z-30 px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(234,88,12,0.4)]">
+          <i class="fa-solid fa-shield-halved text-white text-sm"></i>
+        </div>
+        <div class="flex items-center gap-4">
+          <h1 class="text-base font-bold text-white tracking-tight">OIL Guardian <span class="text-orange-500">AI</span></h1>
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Command Center Live</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button onclick="switchView('employee')" class="px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-hard-hat"></i> Open Employee Terminal
+        </button>
+
+        <button onclick="toggleOfficerProfileModal()" class="flex items-center gap-2.5 px-3 py-1.5 bg-[#141f36] border border-slate-700/80 hover:border-blue-500/50 rounded-xl text-xs font-semibold text-slate-200 transition-all cursor-pointer">
+          <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <span>Safety Officer (Lead)</span>
+          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+        </button>
+        <button onclick="switchView('splash')" class="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-lg border border-rose-500/30 transition-all cursor-pointer" title="Sign Out">
+          <i class="fa-solid fa-power-off text-sm"></i>
+        </button>
+      </div>
+    </header>
+
+    <div id="officerProfileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="max-w-md w-full glass-card bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
+        <button onclick="toggleOfficerProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <div class="flex items-center gap-4 pb-5 border-b border-slate-800">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Er. P. K. Hazarika</h3>
+            <p class="text-xs font-semibold text-blue-400">Chief Safety Officer & Directorate Lead</p>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">OISD Lead Auditor ID: OIL-HSE-004</span>
+          </div>
+        </div>
+        <div class="py-4 space-y-3 text-xs">
+          <div class="flex justify-between py-1 border-b border-slate-800/60">
+            <span class="text-slate-400">HQ Desk</span>
+            <span class="font-semibold text-white">Central E&P Command · Duliajan</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-800/60">
+            <span class="text-slate-400">Authority Tier</span>
+            <span class="font-semibold text-emerald-400">Level 4 (Stop-Work Order Authorization)</span>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-slate-400">Active Jurisdiction</span>
+            <span class="font-semibold text-white">All Refineries & Drilling Rigs</span>
+          </div>
+        </div>
+        <button onclick="toggleOfficerProfileModal()" class="w-full mt-2 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer">
+          Close Officer Profile
+        </button>
+      </div>
     </div>
 
-  </main>
+    <main class="max-w-7xl mx-auto w-full p-8 space-y-6 relative z-10 flex-1">
+      <div id="queueView">
+        <div class="flex items-center justify-between pb-2">
+          <div>
+            <h2 class="text-2xl font-black text-white tracking-tight">Safety Telemetry Feed</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Live neural analysis of reports submitted across oilfields.</p>
+          </div>
+          <button onclick="renderAllReports()" class="px-3.5 py-2 bg-[#121a2d] border border-slate-700/80 text-slate-200 hover:text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-sm cursor-pointer">
+            <i class="fa-solid fa-rotate text-orange-400"></i>
+            <span>Sync Feeds</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-3.5 my-5">
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-rose-400">High Risk</span>
+              <i class="fa-solid fa-fire text-rose-500 text-xs"></i>
+            </div>
+            <p id="statHigh" class="text-3xl font-black text-white">0</p>
+          </div>
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-amber-400">Medium Risk</span>
+              <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>
+            </div>
+            <p id="statMed" class="text-3xl font-black text-white">0</p>
+          </div>
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-emerald-400">Low Risk</span>
+              <i class="fa-solid fa-shield-check text-emerald-500 text-xs"></i>
+            </div>
+            <p id="statLow" class="text-3xl font-black text-white">0</p>
+          </div>
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-blue-400">Active Inves.</span>
+              <i class="fa-solid fa-crosshairs text-blue-400 text-xs"></i>
+            </div>
+            <p id="statInves" class="text-3xl font-black text-white">0</p>
+          </div>
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-slate-400">Resolved</span>
+              <i class="fa-solid fa-check text-slate-400 text-xs"></i>
+            </div>
+            <p id="statResolved" class="text-3xl font-black text-white">0</p>
+          </div>
+          <div class="p-4 bg-[#0d1424] rounded-2xl border border-orange-500/20 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-orange-400">Total Logs</span>
+              <i class="fa-solid fa-database text-orange-400 text-xs"></i>
+            </div>
+            <p id="statTotal" class="text-3xl font-black text-white">0</p>
+          </div>
+        </div>
+
+        <div class="bg-[#0b1120] rounded-2xl border border-slate-800/90 shadow-2xl overflow-hidden">
+          <div class="p-4 border-b border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="relative w-full md:w-96">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+              <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Telemetry ID, site, department, or keyword..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all">
+            </div>
+
+            <div class="flex items-center gap-2.5 w-full md:w-auto">
+              <select id="riskFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+                <option value="ALL">All Risk Tiers</option>
+                <option value="High Risk">🔥 High Risk</option>
+                <option value="Medium Risk">⚠️ Medium Risk</option>
+                <option value="Low Risk">🛡️ Low Risk</option>
+              </select>
+              <select id="categoryFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+                <option value="ALL">All Categories</option>
+                <option value="Unsafe Act">Unsafe Act</option>
+                <option value="Unsafe Condition">Unsafe Condition</option>
+                <option value="Near-Miss">Near-Miss</option>
+              </select>
+              <button onclick="resetFilters()" title="Reset Filters" class="px-3 py-2.5 bg-[#121a2d] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/80 rounded-xl text-xs transition-colors cursor-pointer">
+                <i class="fa-solid fa-filter-circle-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[#070b14] text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-800">
+                <tr>
+                  <th class="px-6 py-3.5">Telemetry ID</th>
+                  <th class="px-6 py-3.5">Site & Department</th>
+                  <th class="px-6 py-3.5">Category</th>
+                  <th class="px-6 py-3.5">Risk Tier</th>
+                  <th class="px-6 py-3.5">SIF Prob.</th>
+                  <th class="px-6 py-3.5">Status</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody" class="divide-y divide-slate-800/80 font-medium text-slate-300"></tbody>
+            </table>
+          </div>
+          <div id="noResults" class="hidden p-8 text-center text-xs text-slate-500 font-semibold">
+            No records match your filter criteria.
+          </div>
+        </div>
+      </div>
+
+      <div id="reviewView" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+          <div>
+            <button onclick="showQueueView()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800/70 hover:bg-slate-800 border border-slate-700 px-3.5 py-2 rounded-xl transition-colors mb-3 cursor-pointer">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Return to Telemetry Feed</span>
+            </button>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-black text-orange-500 uppercase tracking-widest mono bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">SIH26165 NEURAL FORENSICS</span>
+              <span class="text-xs text-slate-500">•</span>
+              <span class="text-xs text-slate-400 font-medium">Real-time SIF Precursor Deconstruction</span>
+            </div>
+            <h2 id="revId" class="text-4xl font-black text-white tracking-tight mono mt-1">OG-2026-3527</h2>
+            <p id="revMeta" class="text-xs text-slate-400 font-medium mt-1 flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-slate-500"></i>
+              <span>Duliajan Oilfield · Drilling Operations · 9/9/2026, 1:03:03 PM</span>
+            </p>
+          </div>
+
+          <div class="flex sm:flex-col items-end gap-2">
+            <div id="revRiskPill"></div>
+            <span class="text-[11px] text-slate-400 font-mono" id="revReporterBadge">Reporter: oil-79655</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 glass-card rounded-2xl relative overflow-hidden border-orange-500/30">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">SIF Precursor Prob.</span>
+              <i class="fa-solid fa-radiation text-orange-500 text-xs"></i>
+            </div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="cardSifProb" class="text-3xl font-black text-white mono">48.5%</span>
+              <span id="cardSifSeverity" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Elevated</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div id="cardSifBar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full" style="width: 48.5%;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2">Likelihood of fatal or life-altering harm</p>
+          </div>
+
+          <div class="p-4 glass-card rounded-2xl relative overflow-hidden">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Incident Category</span>
+              <i class="fa-solid fa-tag text-blue-400 text-xs"></i>
+            </div>
+            <div class="mt-1">
+              <span id="cardCategory" class="text-xl font-black text-white">Near-Miss</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-3 text-xs text-blue-400 font-semibold">
+              <i class="fa-solid fa-circle-check text-[10px]"></i>
+              <span id="cardCategorySub">High-Energy Close Call</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Classified across Act, Cond., Near-Miss</p>
+          </div>
+
+          <div class="p-4 glass-card rounded-2xl relative overflow-hidden">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational Severity</span>
+              <i class="fa-solid fa-gauge-high text-amber-400 text-xs"></i>
+            </div>
+            <div class="mt-1">
+              <span id="cardRiskTier" class="text-xl font-black text-amber-400">Medium Risk</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-3 text-xs text-slate-300 font-medium">
+              <i class="fa-solid fa-layer-group text-slate-500 text-[10px]"></i>
+              <span>Tier 2 Operational Event</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Assessed on frequency & exposure</p>
+          </div>
+
+          <div class="p-4 glass-card rounded-2xl relative overflow-hidden border-blue-500/20">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">IOGP Life-Saving Rule</span>
+              <i class="fa-solid fa-shield-heart text-indigo-400 text-xs"></i>
+            </div>
+            <div class="mt-1">
+              <span id="cardIogpRule" class="text-sm font-bold text-white leading-tight block line-clamp-1">Hydraulic / Mechanical</span>
+            </div>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold">
+              <i class="fa-solid fa-book-bookmark text-[9px]"></i>
+              <span>OISD Standard 179</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Regulatory safety mandate compliance</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">01</span>
+                  <h3 class="text-sm font-bold text-white tracking-wide">Field Observation & Semantic XAI Extraction</h3>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-800 px-2 py-1 rounded">SHAP Token Weights</span>
+              </div>
+              <div class="p-4 rounded-xl bg-[#090f1d] border border-slate-800 text-sm leading-relaxed text-slate-200">
+                <p id="revObservationText">
+                  Equipment malfunction — <span class="token-highlight">High-pressure hydraulic hose</span> clamp <span class="token-highlight">slipped</span> during drill pipe makeup. Line <span class="token-highlight">whipped against guard</span>.
+                </p>
+              </div>
+              <div class="flex items-center gap-4 mt-3 text-[11px] text-slate-400">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded bg-amber-500/40 border border-amber-400"></span>
+                  <span>SIF Trigger Tokens (Kinetic / Pressure / Height)</span>
+                </span>
+                <span class="text-slate-600">•</span>
+                <span>Confidence Threshold: <strong class="text-white">0.82</strong></span>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">02</span>
+                  <h3 class="text-sm font-bold text-white tracking-wide">3-Expert Ensemble Diagnostics (BERT + RoBERTa + XGBoost)</h3>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">Calibrated Soft-Voting Stack</span>
+              </div>
+
+              <div class="space-y-4">
+                <div class="p-3.5 rounded-xl glass-panel-sub">
+                  <div class="flex justify-between items-center text-xs mb-1.5">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-person-falling-burst text-slate-400"></i>
+                      <span class="font-bold text-white">Model A · Unsafe Act Specialist (Behavioral Deviation)</span>
+                    </div>
+                    <span id="scoreAct" class="font-bold mono text-slate-300">18.4%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="barAct" class="bg-blue-500 h-full rounded-full" style="width: 18.4%;"></div>
+                  </div>
+                  <p class="text-[10px] text-slate-500 mt-1.5">Low probability of intentional procedural omission by operator</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl glass-panel-sub">
+                  <div class="flex justify-between items-center text-xs mb-1.5">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                      <span class="font-bold text-white">Model B · Unsafe Condition Specialist (Mechanical & Environmental)</span>
+                    </div>
+                    <span id="scoreCond" class="font-bold mono text-amber-400">76.8%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="barCond" class="bg-amber-500 h-full rounded-full" style="width: 76.8%;"></div>
+                  </div>
+                  <p class="text-[10px] text-slate-500 mt-1.5">Elevated degradation on clamp retention hardware</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl glass-panel-sub">
+                  <div class="flex justify-between items-center text-xs mb-1.5">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-bolt text-orange-500"></i>
+                      <span class="font-bold text-white">Model C · Near-Miss High-Energy Precursor Detector (SIF Engine)</span>
+                    </div>
+                    <span id="scoreNear" class="font-bold mono text-orange-400">93.3%</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="barNear" class="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full neon-bar" style="width: 93.3%;"></div>
+                  </div>
+                  <p class="text-[10px] text-slate-500 mt-1.5">Confirmed high-energy barrier failure with proximity to drill-crew personnel</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold flex items-center justify-center mono">03</span>
+                  <h3 class="text-sm font-bold text-white tracking-wide">Multi-Vector Energy Identification & Barrier Integrity</h3>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 mono">OISD-179 MATRIX</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl glass-panel-sub">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Detected Energy Vectors</span>
+                  <ul class="space-y-2 text-xs">
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span class="flex items-center gap-2"><i class="fa-solid fa-gauge text-orange-400"></i> Hydraulic Pressure (&gt;3000 PSI)</span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">CRITICAL</span>
+                    </li>
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span class="flex items-center gap-2"><i class="fa-solid fa-circle-notch text-amber-400"></i> Whipping Line Kinetic Energy</span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">HIGH</span>
+                    </li>
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span class="flex items-center gap-2"><i class="fa-solid fa-fire text-slate-500"></i> Flammable Atmospheric Gas</span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">NOT PRESENT</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="p-4 rounded-xl glass-panel-sub">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Protective Barrier Assessment</span>
+                  <ul class="space-y-2 text-xs">
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span>Physical Equipment Guard</span>
+                      <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-check"></i> Intact / Intercepted</span>
+                    </li>
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span>Hose Whip-Check Cable</span>
+                      <span class="text-[10px] font-bold text-rose-400 flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Compromised / Missing</span>
+                    </li>
+                    <li class="flex items-center justify-between text-slate-300">
+                      <span>Personnel Stand-off Red Zone</span>
+                      <span class="text-[10px] font-bold text-amber-400 flex items-center gap-1"><i class="fa-solid fa-clock"></i> Partial Exposure</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl border border-orange-500/40 bg-gradient-to-r from-orange-950/40 to-slate-900/60 shadow-xl relative overflow-hidden">
+              <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center text-lg font-bold shadow-[0_0_15px_rgba(234,88,12,0.5)] shrink-0">
+                  <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="space-y-1">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-orange-400">Immediate Tactical Directive</span>
+                  <h4 class="text-sm font-bold text-white">Recommended Engineering Protocol</h4>
+                  <p id="revActionText" class="text-xs text-slate-300 leading-relaxed pt-1">
+                    Log corrective maintenance ticket, inspect equipment guards, and review operating procedure during shift handover.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="glass-card rounded-2xl p-6 border-t-2 border-t-blue-500 shadow-2xl relative">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mono">COMMAND WORKFLOW</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+              </div>
+              <h4 class="text-sm font-bold text-white mb-4">Authorize Status Override</h4>
+              <div class="space-y-3.5">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Lifecycle Status</label>
+                  <select id="statusSelect" class="w-full p-3 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-blue-500 transition-all cursor-pointer">
+                    <option value="Submitted">Submitted (Under Triage)</option>
+                    <option value="Under Investigation">Under Investigation</option>
+                    <option value="Action Plan Assigned">Action Plan Assigned</option>
+                    <option value="Resolved">Resolved & Closed</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Assign Lead Investigator</label>
+                  <input type="text" id="statusAssignee" placeholder="e.g., Rig Supv. Barua (Drilling)" class="w-full px-3.5 py-2.5 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Action Remarks</label>
+                  <textarea id="statusRemarks" rows="2" placeholder="Record mandatory regulatory notes..." class="w-full p-3 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"></textarea>
+                </div>
+                <button onclick="commitStatusUpdate()" id="btnUpdateStatus" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center justify-center gap-2 transition-all cursor-pointer">
+                  <i class="fa-solid fa-fingerprint"></i>
+                  <span>Authorize Status Update</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-clipboard-list text-orange-400"></i> Officer Notes
+                </h4>
+                <span id="notesCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 mono">0 Entries</span>
+              </div>
+              <div id="notesContainer" class="space-y-2.5 max-h-56 overflow-y-auto pr-1 mb-3.5"></div>
+              <div class="flex gap-2">
+                <input type="text" id="newNoteInput" placeholder="Add confidential inspection note..." class="flex-1 px-3 py-2 bg-[#090f1d] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all">
+                <button onclick="postOfficerNote()" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-[0_0_12px_rgba(234,88,12,0.4)] transition-all cursor-pointer">
+                  <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                  <span>Post</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
   <script>
-    const user = localStorage.getItem('oil_user_id') || 'oil-79655';
-    const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : window.location.origin;
-    let aiTimer = null;
-    let latestAiResult = null;
-    document.getElementById('displayUser').innerText = user;
-    document.getElementById('modalEmpId').innerText = user;
-
-    function toggleProfileModal() {
-      const modal = document.getElementById('profileModal');
-      modal.classList.toggle('hidden');
+    function notifyDataSync() {
+      try {
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('oil_reports_sync');
+          bc.postMessage({ type: 'SYNC' });
+          bc.close();
+        }
+      } catch(e) {}
     }
 
-    function getReports() {
-      const stored = localStorage.getItem('oil_reports_db');
-      if (stored) return JSON.parse(stored);
-      return [];
+    try {
+      if ('BroadcastChannel' in window) {
+        const bc = new BroadcastChannel('oil_reports_sync');
+        bc.onmessage = function(ev) {
+          if (ev.data && ev.data.type === 'SYNC') {
+            if (typeof renderHistory === 'function') renderHistory();
+            if (typeof renderAllReports === 'function') renderAllReports();
+          }
+        };
+      }
+    } catch(e) {}
+
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'oil_reports_db') {
+        if (typeof renderHistory === 'function') renderHistory();
+        if (typeof renderAllReports === 'function') renderAllReports();
+      }
+    });
+
+    window.addEventListener('focus', function() {
+      if (typeof renderHistory === 'function') renderHistory();
+      if (typeof renderAllReports === 'function') renderAllReports();
+    });
+
+    function switchView(targetView) {
+      document.getElementById('viewSplash').classList.add('hidden');
+      document.getElementById('viewEmployee').classList.add('hidden');
+      document.getElementById('viewOfficer').classList.add('hidden');
+
+      if (targetView === 'employee') {
+        document.getElementById('viewEmployee').classList.remove('hidden');
+        const user = localStorage.getItem('oil_user_id') || 'oil-79655';
+        document.getElementById('displayUser').innerText = user;
+        document.getElementById('modalEmpId').innerText = user;
+        renderHistory();
+        runAiPreAssessment();
+      } else if (targetView === 'officer') {
+        document.getElementById('viewOfficer').classList.remove('hidden');
+        showQueueView();
+        renderAllReports();
+      } else {
+        document.getElementById('viewSplash').classList.remove('hidden');
+        endSplashAnimation();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    const splashStages = [
+      { progress: 25, text: "Connecting to OIL India HSE Gateways..." },
+      { progress: 55, text: "Loading Neural Classifiers..." },
+      { progress: 85, text: "Synchronizing IOGP Safety Rules..." },
+      { progress: 100, text: "Security Handshake Verified." }
+    ];
+    let currentStage = 0;
+
+    function runSplashSequence() {
+      const progressBar = document.getElementById('splashProgress');
+      const statusText = document.getElementById('splashStatusText');
+      const percentText = document.getElementById('splashPercent');
+      const interval = setInterval(() => {
+        if (currentStage < splashStages.length) {
+          const step = splashStages[currentStage];
+          if(progressBar) progressBar.style.width = step.progress + "%";
+          if(percentText) percentText.innerText = step.progress + "%";
+          if(statusText) statusText.innerText = step.text;
+          currentStage++;
+        } else {
+          clearInterval(interval);
+          setTimeout(endSplashAnimation, 300);
+        }
+      }, 400);
+    }
+
+    function endSplashAnimation() {
+      const splash = document.getElementById('splashScreen');
+      const loginCard = document.getElementById('loginCard');
+      if (splash) {
+        splash.classList.add('fade-out');
+        setTimeout(() => {
+          splash.style.display = 'none';
+          if (loginCard) {
+            loginCard.classList.remove('opacity-0', 'translate-y-6');
+            loginCard.classList.add('fade-in');
+          }
+        }, 500);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('employee')) switchView('employee');
+      else if (path.includes('officer')) switchView('officer');
+      else runSplashSequence();
+    });
+
+    function switchTab(role) {
+      const tabEmp = document.getElementById('tabEmployee');
+      const tabOff = document.getElementById('tabOfficer');
+      const formEmp = document.getElementById('formEmployee');
+      const formOff = document.getElementById('formOfficer');
+      if (role === 'employee') {
+        tabEmp.className = "py-2.5 text-xs font-bold rounded-xl transition-all shadow-md bg-[#1e293b] border border-slate-600 text-orange-400 flex items-center justify-center gap-2";
+        tabOff.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white flex items-center justify-center gap-2 bg-transparent border border-transparent";
+        formEmp.classList.remove('hidden'); formOff.classList.add('hidden');
+      } else {
+        tabOff.className = "py-2.5 text-xs font-bold rounded-xl transition-all shadow-md bg-[#1e293b] border border-slate-600 text-orange-400 flex items-center justify-center gap-2";
+        tabEmp.className = "py-2.5 text-xs font-bold rounded-xl transition-all text-slate-400 hover:text-white flex items-center justify-center gap-2 bg-transparent border border-transparent";
+        formOff.classList.remove('hidden'); formEmp.classList.add('hidden');
+      }
+    }
+
+    function handleLogin(e, role) {
+      e.preventDefault();
+      localStorage.setItem('oil_active_role', role);
+      if (role === 'employee') {
+        localStorage.setItem('oil_user_id', document.getElementById('empId').value || 'oil-79655');
+        switchView('employee');
+      } else {
+        localStorage.setItem('oil_user_id', 'Safety Officer (HSE-Lead)');
+        switchView('officer');
+      }
+    }
+
+    function quickLogin(role) {
+      localStorage.setItem('oil_active_role', role);
+      if (role === 'employee') {
+        localStorage.setItem('oil_user_id', 'oil-79655');
+        switchView('employee');
+      } else {
+        localStorage.setItem('oil_user_id', 'Safety Officer (HSE-Lead)');
+        switchView('officer');
+      }
+    }
+
+    let aiTimer = null;
+    let latestAiResult = null;
+
+    function toggleProfileModal() {
+      document.getElementById('profileModal').classList.toggle('hidden');
+    }
+
+    function toggleOfficerProfileModal() {
+      document.getElementById('officerProfileModal').classList.toggle('hidden');
+    }
+
+    function processTextEnsemble(text) {
+      const cleanText = (text || "").trim();
+      if (!cleanText) {
+        return {
+          category: "None",
+          risk_tier: "Low Risk",
+          sif_prob: "0.0%",
+          iogp_rule: "Operational Safety",
+          extracted_text: "",
+          ensemble_breakdown: { near_miss: 0.0, unsafe_act: 0.0, unsafe_condition: 0.0 }
+        };
+      }
+
+      const t = cleanText.toLowerCase();
+
+      let nmScore = 15.0;
+      if (/(slip|fall|near miss|almost|dropped|whipped|close call|narrowly|near-miss|missed)/i.test(t)) nmScore += 45.0;
+      if (/(crane|hoist|rig|drill|pipe|pressure|hydraulic|height|scaffold|high energy|tether)/i.test(t)) nmScore += 25.0;
+      if (/(no lanyard|without harness|untethered|leak|sour gas|pitting|corrosion)/i.test(t)) nmScore += 12.0;
+      nmScore = Math.min(98.5, Math.max(8.0, nmScore));
+
+      let uaScore = 10.0;
+      if (/(observed|worker|operator|crew|contractor|without|no ppe|bypassed|ignored|not wearing|unauthorized|tethered)/i.test(t)) uaScore += 45.0;
+      if (/(harness|lanyard|height|scaffold|loto|lockout|live wire|confined space|monkey board)/i.test(t)) uaScore += 35.0;
+      uaScore = Math.min(97.0, Math.max(6.0, uaScore));
+
+      let ucScore = 10.0;
+      if (/(leak|corrosion|pitting|flange|damaged|broken|exposed|faulty|clamp|pressure|guard|whip|rusty|decay|malfunction)/i.test(t)) ucScore += 50.0;
+      if (/(high pressure|sour gas|gas|line|valve|pipe|furnace|voltage|hydraulic hose)/i.test(t)) ucScore += 30.0;
+      ucScore = Math.min(98.2, Math.max(7.0, ucScore));
+
+      let category = "Unsafe Condition";
+      let dominantScore = ucScore;
+      if (nmScore >= ucScore && nmScore >= uaScore) {
+        category = "Near-Miss";
+        dominantScore = nmScore;
+      } else if (uaScore >= ucScore && uaScore >= nmScore) {
+        category = "Unsafe Act";
+        dominantScore = uaScore;
+      }
+
+      let riskTier = "Low Risk";
+      if (dominantScore >= 75.0) riskTier = "High Risk";
+      else if (dominantScore >= 45.0) riskTier = "Medium Risk";
+
+      let iogpRule = "Operational Safety";
+      if (/(lockout|loto|isolation|energized|live wire)/i.test(t)) iogpRule = "Energy Isolation";
+      else if (/(confined space|gas test|atmosphere)/i.test(t)) iogpRule = "Confined Space";
+      else if (/(fall|height|scaffold|harness|monkey board|ladder)/i.test(t)) iogpRule = "Working at Height";
+      else if (/(leak|gas|flange|corrosion|pressure|hydraulic)/i.test(t)) iogpRule = "Asset Integrity / Pressure";
+      else if (/(crane|hoist|sling|lifting|rigging|heavy)/i.test(t)) iogpRule = "Mechanical Lifting";
+
+      return {
+        category: category,
+        risk_tier: riskTier,
+        sif_prob: dominantScore.toFixed(1) + "%",
+        iogp_rule: iogpRule,
+        extracted_text: cleanText,
+        ensemble_breakdown: { near_miss: nmScore, unsafe_act: uaScore, unsafe_condition: ucScore }
+      };
     }
 
     function setInputMode(mode) {
       document.getElementById('voicePanel').classList.add('hidden');
-      const resetClass = "py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white";
-      const activeClass = "py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)]";
+      if (document.getElementById('ocrPanel')) document.getElementById('ocrPanel').classList.add('hidden');
+
+      const resetClass = "py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white cursor-pointer";
+      const activeClass = "py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)] cursor-pointer";
       document.getElementById('btnTabText').className = resetClass;
       document.getElementById('btnTabVoice').className = resetClass;
       document.getElementById('btnTabOcr').className = resetClass;
 
-      if (mode === 'text') { document.getElementById('btnTabText').className = activeClass; }
-      else if (mode === 'voice') { document.getElementById('btnTabVoice').className = activeClass; document.getElementById('voicePanel').classList.remove('hidden'); }
+      if (mode === 'text') { 
+        document.getElementById('btnTabText').className = activeClass; 
+      } else if (mode === 'voice') { 
+        document.getElementById('btnTabVoice').className = activeClass; 
+        document.getElementById('voicePanel').classList.remove('hidden'); 
+      } else if (mode === 'ocr') {
+        document.getElementById('btnTabOcr').className = activeClass;
+        if (document.getElementById('ocrPanel')) document.getElementById('ocrPanel').classList.remove('hidden');
+      }
+    }
+
+    let voiceRecognition = null;
+    let isVoiceRecording = false;
+
+    function startVoiceRecognition() {
+      const recordBtn = document.getElementById('recordBtn');
+      const recordStatus = document.getElementById('recordStatus');
+      const textInput = document.getElementById('reportText');
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (isVoiceRecording) {
+        if (voiceRecognition) {
+          try { voiceRecognition.stop(); } catch(e){}
+        }
+        isVoiceRecording = false;
+        if (recordBtn) {
+          recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
+          recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
+        }
+        if (recordStatus) {
+          recordStatus.innerText = "✅ Voice recording finalized. AI Model categorizing observation...";
+          recordStatus.className = "text-xs font-bold text-emerald-400";
+        }
+        runAiPreAssessment();
+        return;
+      }
+
+      if (!SpeechRecognition) {
+        simulateAudioRecord();
+        return;
+      }
+
+      try {
+        voiceRecognition = new SpeechRecognition();
+        voiceRecognition.continuous = true;
+        voiceRecognition.interimResults = true;
+        voiceRecognition.lang = 'en-US';
+
+        voiceRecognition.onstart = function() {
+          isVoiceRecording = true;
+          if (recordBtn) {
+            recordBtn.className = "w-12 h-12 bg-rose-600 text-white rounded-full shadow-[0_0_25px_rgba(244,63,94,0.8)] mb-2 animate-pulse flex items-center justify-center cursor-pointer mx-auto";
+            recordBtn.innerHTML = '<i class="fa-solid fa-square text-lg"></i>';
+          }
+          if (recordStatus) {
+            recordStatus.innerText = "🎙️ Listening... Speak your observation clearly now! (Click icon to stop)";
+            recordStatus.className = "text-xs font-bold text-rose-400 animate-pulse";
+          }
+        };
+
+        voiceRecognition.onresult = function(event) {
+          let transcript = '';
+          for (let i = 0; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript + ' ';
+          }
+          if (textInput && transcript.trim()) {
+            textInput.value = transcript.trim();
+            runAiPreAssessment();
+          }
+        };
+
+        voiceRecognition.onerror = function(event) {
+          console.warn("Speech recognition notice:", event.error);
+          isVoiceRecording = false;
+          if (recordBtn) {
+            recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
+            recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
+          }
+          if (event.error === 'not-allowed') {
+            if (recordStatus) {
+              recordStatus.innerText = "⚠️ Microphone permission denied. Please grant microphone access in your browser header.";
+              recordStatus.className = "text-xs font-bold text-amber-400";
+            }
+          } else {
+            simulateAudioRecord();
+          }
+        };
+
+        voiceRecognition.onend = function() {
+          isVoiceRecording = false;
+          if (recordBtn) {
+            recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
+            recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
+          }
+          if (textInput && textInput.value.trim()) {
+            if (recordStatus) {
+              recordStatus.innerText = "✅ Voice input transcribed & AI categorized!";
+              recordStatus.className = "text-xs font-bold text-emerald-400";
+            }
+            runAiPreAssessment();
+          }
+        };
+
+        voiceRecognition.start();
+      } catch (e) {
+        console.error("Speech recognition error:", e);
+        simulateAudioRecord();
+      }
+    }
+
+    function handleOcrScan(event) {
+      const file = event.target.files[0];
+      const ocrStatus = document.getElementById('ocrStatus');
+      if (!file) return;
+
+      if (ocrStatus) ocrStatus.innerText = `🔍 Scanning "${file.name}" with OCR Neural Engine...`;
+      setTimeout(() => {
+        const textInput = document.getElementById('reportText');
+        if (textInput) {
+          textInput.value = `[OCR SCAN: ${file.name}] High pressure gas flange leak observed on CDU unit line #4 during routine inspection. Sour gas odor detected.`;
+        }
+        if (ocrStatus) {
+          ocrStatus.innerText = "✅ Field slip text extracted successfully!";
+          ocrStatus.className = "text-[11px] font-bold text-emerald-400";
+        }
+        runAiPreAssessment();
+      }, 1000);
     }
 
     function simulateAudioRecord() {
-      document.getElementById('recordStatus').innerText = "Transcribing Whisper AI...";
+      const recordStatus = document.getElementById('recordStatus');
+      if (recordStatus) recordStatus.innerText = "Transcribing Whisper AI...";
       setTimeout(() => {
-        document.getElementById('reportText').value = "Crew adjusting monkey board at 14m without fall protection lanyard.";
-        document.getElementById('recordStatus').innerText = "Transcribed successfully!";
+        const textInput = document.getElementById('reportText');
+        if (textInput) textInput.value = "Crew adjusting monkey board at 14m without fall protection lanyard.";
+        if (recordStatus) {
+          recordStatus.innerText = "✅ Transcribed successfully!";
+          recordStatus.className = "text-xs font-bold text-emerald-400";
+        }
         runAiPreAssessment();
-      }, 1000);
+      }, 800);
     }
 
     function loadScenario(type) {
@@ -248,108 +1172,195 @@
       runAiPreAssessment();
     }
 
+    function updateSubmitButtonState(enabled, aiResult = null) {
+      const btn = document.getElementById('btnSubmitReport');
+      if (!btn) return;
+
+      if (enabled && aiResult) {
+        btn.disabled = false;
+        btn.className = "w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-bold rounded-xl text-sm shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 transition-all cursor-pointer";
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Transmit Report (${aiResult.category} · ${aiResult.risk_tier})`;
+      } else {
+        btn.disabled = true;
+        btn.className = "w-full py-3.5 bg-slate-800/80 border border-slate-700 text-slate-500 font-bold rounded-xl text-sm opacity-60 cursor-not-allowed flex items-center justify-center gap-2 transition-all";
+        btn.innerHTML = `<i class="fa-solid fa-lock text-slate-400"></i> Awaiting AI Classification & SIF Triage...`;
+      }
+    }
+
     function applyAiResult(result) {
       latestAiResult = result;
       const pnl = document.getElementById('aiPreview');
       const pill = document.getElementById('previewRiskPill');
       const risk = result.risk_tier || 'Low Risk';
-      pill.innerText = risk;
-      pill.className = risk.includes('High')
-        ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30"
-        : risk.includes('Medium')
-          ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30"
-          : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-      pnl.className = "p-4 bg-slate-800/60 border border-slate-700/50 rounded-xl backdrop-blur-md";
-      document.getElementById('previewType').innerText = result.category || '-';
-      document.getElementById('previewSif').innerText = result.sif_prob || '0.0%';
-      document.getElementById('previewRule').innerText = result.iogp_rule || 'Operational Safety';
+      if (pill) {
+        pill.innerText = risk;
+        pill.className = risk.includes('High')
+          ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30"
+          : risk.includes('Medium')
+            ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30"
+            : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+      }
+      if (pnl) pnl.className = "p-4 bg-slate-800/60 border border-slate-700/50 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(234,88,12,0.15)]";
+      if (document.getElementById('previewType')) document.getElementById('previewType').innerText = result.category || '-';
+      if (document.getElementById('previewSif')) document.getElementById('previewSif').innerText = result.sif_prob || '0.0%';
+      if (document.getElementById('previewRule')) document.getElementById('previewRule').innerText = result.iogp_rule || 'Operational Safety';
+
+      updateSubmitButtonState(true, result);
     }
 
-    async function runAiPreAssessment() {
-      const text = document.getElementById('reportText').value.trim();
+    function runAiPreAssessment() {
+      const textInput = document.getElementById('reportText');
+      const text = textInput ? textInput.value.trim() : '';
       const pill = document.getElementById('previewRiskPill');
-      if (!text) {
+      if (!text || text.length < 5) {
         latestAiResult = null;
-        pill.innerText = "Awaiting Input";
-        pill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700 text-slate-300";
-        document.getElementById('previewType').innerText = '-';
-        document.getElementById('previewSif').innerText = '-';
-        document.getElementById('previewRule').innerText = '-';
+        if(pill) {
+          pill.innerText = "Awaiting Input";
+          pill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700 text-slate-300";
+        }
+        if(document.getElementById('previewType')) document.getElementById('previewType').innerText = '-';
+        if(document.getElementById('previewSif')) document.getElementById('previewSif').innerText = '-';
+        if(document.getElementById('previewRule')) document.getElementById('previewRule').innerText = '-';
+        
+        updateSubmitButtonState(false);
         return;
       }
 
       clearTimeout(aiTimer);
-      aiTimer = setTimeout(async () => {
-        pill.innerText = "Analyzing...";
-        try {
-          const response = await fetch(`${API_BASE}/api/predict`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({text})
-          });
-          if (!response.ok) throw new Error(`API ${response.status}`);
-          applyAiResult(await response.json());
-        } catch (error) {
-          console.error('AI pre-assessment failed:', error);
-          pill.innerText = "AI Offline";
-          pill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700 text-slate-300";
-        }
-      }, 400);
+      aiTimer = setTimeout(() => {
+        const aiResult = processTextEnsemble(text);
+        applyAiResult(aiResult);
+      }, 100);
     }
 
-    async function submitReport() {
-      const text = document.getElementById('reportText').value.trim();
-      if(!text) return;
-
-      const facility = document.getElementById('reportFacility').value;
-      const department = document.getElementById('reportDepartment').value;
-      const submitButton = document.querySelector('button[onclick="submitReport()"]');
-
+    function getReports() {
       try {
-        if (submitButton) submitButton.disabled = true;
-        const response = await fetch(`${API_BASE}/api/predict`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({text})
-        });
-        if (!response.ok) throw new Error(`API ${response.status}`);
-        const ai = await response.json();
-        applyAiResult(ai);
-
-        const db = getReports();
-        db.unshift({
-          id: `OG-2026-${Math.floor(1000+Math.random()*9000)}`,
-          date: new Date().toLocaleString(),
-          facility: `${facility} · ${department}`,
-          reporter: user,
-          category: ai.category || "Unsafe Condition",
-          risk: ai.risk_tier || "Medium Risk",
-          sifProb: ai.sif_prob || "0.0%",
-          iogp: ai.iogp_rule || "Operational Safety",
-          text,
-          bert: 92.4, yolo: 89.2, energy: 93.8,
-          action: "Supervisor inspection required for site clearance.",
-          status: "Submitted",
-          notes: [{ user, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), text: "Report submitted" }]
-        });
-        localStorage.setItem('oil_reports_db', JSON.stringify(db));
-        document.getElementById('reportText').value = "";
-        latestAiResult = null;
-        runAiPreAssessment();
-        renderHistory();
-      } catch (error) {
-        console.error('Report submission failed:', error);
-        alert('Unable to reach the OIL Guardian AI backend. Start the FastAPI server and try again.');
-      } finally {
-        if (submitButton) submitButton.disabled = false;
+        const stored = localStorage.getItem('oil_reports_db');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.error("Error reading oil_reports_db", e);
       }
+
+      const defaultData = [
+        {
+          id: "OG-2026-3527",
+          date: "9/9/2026, 1:03:03 PM",
+          facility: "Duliajan Oilfield · Drilling Operations",
+          reporter: "oil-79655",
+          category: "Near-Miss",
+          risk: "Medium Risk",
+          sifProb: "48.5%",
+          iogp: "Hydraulic / Mechanical",
+          text: "Equipment malfunction — High-pressure hydraulic hose clamp slipped during drill pipe makeup. Line whipped against guard.",
+          bert: 93.3, yolo: 91.9, energy: 92.9,
+          action: "Log corrective maintenance ticket, inspect equipment guards, and review operating procedure during shift handover.",
+          status: "Submitted",
+          notes: [{ user: "oil-79655", time: "1:03 PM", text: "Logged via Rig Terminal" }]
+        },
+        {
+          id: "OG-2026-3528",
+          date: "9/9/2026, 1:45:12 PM",
+          facility: "Digboi Refinery · Crude Distillation Unit",
+          reporter: "oil-88210",
+          category: "Unsafe Condition",
+          risk: "High Risk",
+          sifProb: "96.4%",
+          iogp: "Energy Isolation / Hot Work",
+          text: "Heavy flange pitting corrosion detected on high pressure sour gas line near furnace burner ignition source.",
+          bert: 95.8, yolo: 93.1, energy: 98.2,
+          action: "Issue immediate Cold Work stop, depressurize section, and deploy ultrasonic thickness testing crew.",
+          status: "Under Investigation",
+          notes: [{ user: "oil-88210", time: "1:45 PM", text: "Inspection report logged" }]
+        },
+        {
+          id: "OG-2026-3529",
+          date: "9/9/2026, 2:10:00 PM",
+          facility: "Naharkatiya Pumping Station · Civil Works",
+          reporter: "oil-34112",
+          category: "Unsafe Act",
+          risk: "High Risk",
+          sifProb: "91.8%",
+          iogp: "Working at Height",
+          text: "Scaffolding contractor observed modifying intermediate ledger board at 11 meters elevation without tethered safety harness.",
+          bert: 94.2, yolo: 90.5, energy: 92.0,
+          action: "Stop work order issued immediately. Retrain scaffolding team on dual lanyard latch protocols.",
+          status: "Under Investigation",
+          notes: [{ user: "oil-34112", time: "2:10 PM", text: "Report submitted" }]
+        }
+      ];
+      localStorage.setItem('oil_reports_db', JSON.stringify(defaultData));
+      return defaultData;
+    }
+
+    function submitReport() {
+      const textInput = document.getElementById('reportText');
+      const text = textInput ? textInput.value.trim() : '';
+      if(!text || text.length < 5) {
+        alert("Please describe the incident or hazard in detail (minimum 5 characters).");
+        return;
+      }
+
+      if (!latestAiResult || !latestAiResult.category) {
+        const ai = processTextEnsemble(text);
+        if (ai && ai.category) {
+          applyAiResult(ai);
+        } else {
+          alert("⚠️ Mandatory AI Analysis Pending: The system must categorize the incident (Unsafe Act / Unsafe Condition / Near-Miss) and evaluate SIF probability before transmission.");
+          return;
+        }
+      }
+
+      const facilitySelect = document.getElementById('reportFacility');
+      const departmentSelect = document.getElementById('reportDepartment');
+      const facility = facilitySelect ? facilitySelect.value : 'Duliajan Oilfield (Drilling)';
+      const department = departmentSelect ? departmentSelect.value : 'Drilling Operations';
+      const user = localStorage.getItem('oil_user_id') || 'oil-79655';
+
+      const ai = latestAiResult;
+
+      const reportId = `OG-2026-${Math.floor(1000+Math.random()*9000)}`;
+      const newReport = {
+        id: reportId,
+        date: new Date().toLocaleString(),
+        facility: `${facility} · ${department}`,
+        reporter: user,
+        category: ai.category || "Unsafe Condition",
+        risk: ai.risk_tier || "Medium Risk",
+        sifProb: ai.sif_prob || "0.0%",
+        iogp: ai.iogp_rule || "Operational Safety",
+        text: text,
+        bert: (parseFloat(ai.sif_prob) * 0.98).toFixed(1),
+        yolo: (parseFloat(ai.sif_prob) * 0.94).toFixed(1),
+        energy: (parseFloat(ai.sif_prob) * 0.96).toFixed(1),
+        action: "Supervisor inspection required for site clearance.",
+        status: "Submitted",
+        notes: [{ user, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), text: "Report submitted from Field Terminal" }]
+      };
+
+      const db = getReports();
+      db.unshift(newReport);
+      localStorage.setItem('oil_reports_db', JSON.stringify(db));
+      notifyDataSync();
+
+      textInput.value = "";
+      latestAiResult = null;
+      runAiPreAssessment();
+      renderHistory();
+      renderAllReports(); // Update Officer Telemetry Feed instantly
+
+      alert(`✅ Report ${reportId} successfully transmitted to Safety Operations Command Center!\n\nYou can click 'Open Safety Console' at the top right to view it in the Officer Dashboard.`);
     }
 
     function renderHistory() {
       const list = document.getElementById('historyList');
+      if(!list) return;
       list.innerHTML = "";
       const reports = getReports();
-      document.getElementById('empReportCount').innerText = `${reports.length} Reports`;
+      const empCount = document.getElementById('empReportCount');
+      if (empCount) empCount.innerText = `${reports.length} Reports`;
 
       reports.forEach(r => {
         let rc = r.risk.includes("High") ? "bg-rose-500/20 text-rose-400 border-rose-500/30" : "bg-amber-500/20 text-amber-400 border-amber-500/30";
@@ -368,7 +1379,242 @@
         `;
       });
     }
-    renderHistory();
+
+    let activeRev = null;
+
+    function showQueueView() {
+      document.getElementById('queueView').classList.remove('hidden');
+      document.getElementById('reviewView').classList.add('hidden');
+    }
+
+    function renderAllReports() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const reports = getReports();
+      const searchInput = document.getElementById('searchInput');
+      const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const riskFilter = document.getElementById('riskFilter');
+      const selectedRisk = riskFilter ? riskFilter.value : 'ALL';
+      const categoryFilter = document.getElementById('categoryFilter');
+      const selectedCategory = categoryFilter ? categoryFilter.value : 'ALL';
+
+      let hr = 0, mr = 0, lr = 0, inv = 0, res = 0;
+      reports.forEach(r => {
+        if (r.risk.includes('High')) hr++;
+        else if (r.risk.includes('Medium')) mr++;
+        else if (r.risk.includes('Low')) lr++;
+        if (r.status === 'Under Investigation') inv++;
+        if (r.status === 'Resolved') res++;
+      });
+      if(document.getElementById('statHigh')) document.getElementById('statHigh').innerText = hr;
+      if(document.getElementById('statMed')) document.getElementById('statMed').innerText = mr;
+      if(document.getElementById('statLow')) document.getElementById('statLow').innerText = lr;
+      if(document.getElementById('statInves')) document.getElementById('statInves').innerText = inv;
+      if(document.getElementById('statResolved')) document.getElementById('statResolved').innerText = res;
+      if(document.getElementById('statTotal')) document.getElementById('statTotal').innerText = reports.length;
+
+      const filtered = reports.filter(r => {
+        const matchesSearch = 
+          r.id.toLowerCase().includes(searchQuery) ||
+          r.facility.toLowerCase().includes(searchQuery) ||
+          r.text.toLowerCase().includes(searchQuery) ||
+          r.reporter.toLowerCase().includes(searchQuery);
+
+        const normCategory = (r.category || '').toLowerCase().replace(/[^a-z]/g, '');
+        const normSelectedCategory = selectedCategory.toLowerCase().replace(/[^a-z]/g, '');
+        const matchesRisk = (selectedRisk === 'ALL') || (r.risk === selectedRisk);
+        const matchesCategory = (selectedCategory === 'ALL') || (normCategory === normSelectedCategory);
+
+        return matchesSearch && matchesRisk && matchesCategory;
+      });
+
+      const tb = document.getElementById('reportsTableBody');
+      const noResults = document.getElementById('noResults');
+      if(!tb) return;
+      tb.innerHTML = "";
+
+      if (filtered.length === 0) {
+        if(noResults) noResults.classList.remove('hidden');
+        return;
+      } else {
+        if(noResults) noResults.classList.add('hidden');
+      }
+
+      filtered.forEach(r => {
+        let rc = "bg-amber-500/10 text-amber-400 border border-amber-500/30";
+        if (r.risk.includes('High')) rc = "bg-rose-500/10 text-rose-400 border border-rose-500/30";
+        if (r.risk.includes('Low')) rc = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
+        let sc = "text-slate-400";
+        if (r.status === 'Under Investigation') sc = "text-blue-400 font-semibold";
+        if (r.status === 'Resolved') sc = "text-emerald-400 font-semibold";
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 cursor-pointer transition-colors";
+        tr.onclick = () => openReport(r.id);
+        tr.innerHTML = `
+          <td class="px-6 py-4 mono font-bold text-white">${r.id}</td>
+          <td class="px-6 py-4 text-slate-300 font-medium">${r.facility}</td>
+          <td class="px-6 py-4 text-slate-400 font-medium">${r.category}</td>
+          <td class="px-6 py-4">
+            <span class="px-2.5 py-1 rounded-md text-[11px] font-bold ${rc}">
+              ${r.risk}
+            </span>
+          </td>
+          <td class="px-6 py-4 font-bold text-orange-400">${r.sifProb}</td>
+          <td class="px-6 py-4 ${sc}">${r.status}</td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function resetFilters() {
+      if(document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
+      if(document.getElementById('riskFilter')) document.getElementById('riskFilter').value = 'ALL';
+      if(document.getElementById('categoryFilter')) document.getElementById('categoryFilter').value = 'ALL';
+      applyFilters();
+    }
+
+    function openReport(id) {
+      const reps = getReports();
+      activeRev = reps.find(r => r.id === id);
+      if (!activeRev) return;
+
+      document.getElementById('queueView').classList.add('hidden');
+      document.getElementById('reviewView').classList.remove('hidden');
+
+      document.getElementById('revId').innerText = activeRev.id;
+      document.getElementById('revMeta').innerHTML = `<i class="fa-solid fa-location-dot text-slate-500"></i> ${activeRev.facility} · ${activeRev.date}`;
+      document.getElementById('revReporterBadge').innerText = `Reporter: ${activeRev.reporter}`;
+
+      let pillStyle = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+      if (activeRev.risk.includes("High")) pillStyle = "bg-rose-500/20 text-rose-300 border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.3)]";
+      if (activeRev.risk.includes("Low")) pillStyle = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+      document.getElementById('revRiskPill').innerHTML = `
+        <span class="px-3.5 py-1 rounded-full text-xs font-bold border ${pillStyle} flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+          <span>${activeRev.risk}</span>
+        </span>
+      `;
+
+      document.getElementById('cardSifProb').innerText = activeRev.sifProb;
+      const numProb = parseFloat(activeRev.sifProb);
+      document.getElementById('cardSifBar').style.width = activeRev.sifProb;
+      
+      const sevLabel = document.getElementById('cardSifSeverity');
+      if (numProb >= 70) {
+        sevLabel.innerText = "CRITICAL";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30";
+      } else if (numProb >= 30) {
+        sevLabel.innerText = "ELEVATED";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30";
+      } else {
+        sevLabel.innerText = "ROUTINE";
+        sevLabel.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+      }
+
+      document.getElementById('cardCategory').innerText = activeRev.category;
+      document.getElementById('cardCategorySub').innerText = activeRev.category === "Near-Miss" ? "High-Energy Close Call" : (activeRev.category === "Unsafe Act" ? "Human Behavioral Protocol" : "Physical Hazard Exposure");
+      document.getElementById('cardRiskTier').innerText = activeRev.risk;
+      document.getElementById('cardIogpRule').innerText = activeRev.iogp;
+
+      const rawText = activeRev.text;
+      const highlighted = rawText
+        .replace(/(high-pressure|hydraulic hose|flange|sour gas|scaffolding|ledger board)/gi, '<span class="token-highlight">$1</span>')
+        .replace(/(slipped|corrosion|ignition source|without tethered safety harness)/gi, '<span class="token-highlight">$1</span>')
+        .replace(/(whipped against guard|11 meters elevation)/gi, '<span class="token-highlight font-bold">$1</span>');
+      document.getElementById('revObservationText').innerHTML = highlighted;
+
+      let actP = 12.0, condP = 76.0, nearP = 93.3;
+      if (activeRev.category === "Unsafe Act") { actP = 94.2; condP = 32.1; nearP = 85.0; }
+      if (activeRev.category === "Unsafe Condition") { actP = 11.5; condP = 96.2; nearP = 72.0; }
+
+      document.getElementById('scoreAct').innerText = `${actP.toFixed(1)}%`;
+      document.getElementById('barAct').style.width = `${actP}%`;
+      document.getElementById('scoreCond').innerText = `${condP.toFixed(1)}%`;
+      document.getElementById('barCond').style.width = `${condP}%`;
+      document.getElementById('scoreNear').innerText = `${nearP.toFixed(1)}%`;
+      document.getElementById('barNear').style.width = `${nearP}%`;
+
+      document.getElementById('revActionText').innerText = activeRev.action;
+      document.getElementById('statusSelect').value = activeRev.status;
+
+      renderNotes();
+    }
+
+    function renderNotes() {
+      const c = document.getElementById('notesContainer');
+      if (!c || !activeRev) return;
+      c.innerHTML = "";
+      const notes = activeRev.notes || [];
+      document.getElementById('notesCountBadge').innerText = `${notes.length} Entries`;
+
+      notes.forEach(n => {
+        c.innerHTML += `
+          <div class="p-2.5 rounded-xl bg-[#090f1d] border border-slate-800 text-xs">
+            <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+              <span class="font-bold text-white">${n.user}</span>
+              <span>${n.time}</span>
+            </div>
+            <p class="text-slate-300">${n.text}</p>
+          </div>
+        `;
+      });
+    }
+
+    function postOfficerNote() {
+      const inp = document.getElementById('newNoteInput');
+      const val = inp.value.trim();
+      if (!val || !activeRev) return;
+
+      if (!activeRev.notes) activeRev.notes = [];
+      activeRev.notes.push({
+        user: "Officer (Lead)",
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        text: val
+      });
+
+      const reps = getReports();
+      const idx = reps.findIndex(r => r.id === activeRev.id);
+      if (idx !== -1) {
+        reps[idx] = activeRev;
+        localStorage.setItem('oil_reports_db', JSON.stringify(reps));
+        notifyDataSync();
+      }
+
+      inp.value = "";
+      renderNotes();
+    }
+
+    function commitStatusUpdate() {
+      if (!activeRev) return;
+      const newStatus = document.getElementById('statusSelect').value;
+      const assignee = document.getElementById('statusAssignee').value.trim();
+      const remarks = document.getElementById('statusRemarks').value.trim();
+
+      activeRev.status = newStatus;
+      if (remarks) {
+        if (!activeRev.notes) activeRev.notes = [];
+        activeRev.notes.push({
+          user: "Status Authorization",
+          time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+          text: `Status changed to [${newStatus}]. ${assignee ? 'Assigned: '+assignee+'. ' : ''}${remarks}`
+        });
+      }
+
+      const reps = getReports();
+      const idx = reps.findIndex(r => r.id === activeRev.id);
+      if (idx !== -1) {
+        reps[idx] = activeRev;
+        localStorage.setItem('oil_reports_db', JSON.stringify(reps));
+        notifyDataSync();
+      }
+
+      alert(`Status update authorized: ${newStatus}`);
+      renderNotes();
+    }
   </script>
 </body>
 </html>

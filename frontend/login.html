@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OIL Guardian AI - Safety Operations Command</title>
+  <title>OIL Guardian AI - Precursor Detection Operations Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -25,11 +25,13 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between relative selection:bg-orange-500/30">
 
+  <!-- Background Glows -->
   <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-600/10 blur-[130px] pointer-events-none"></div>
   <div class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[130px] pointer-events-none"></div>
 
-  <!-- VIEW 1: SPLASH & ENTERPRISE LOGIN -->
-  <div id="viewSplash" class="hidden min-h-screen flex items-center justify-center p-4 relative z-20">
+  <!-- ================= VIEW 1: SPLASH & ENTERPRISE LOGIN ================= -->
+  <div id="viewSplash" class="min-h-screen flex items-center justify-center p-4 relative z-20">
+    <!-- Splash Intro Screen -->
     <div id="splashScreen" class="fixed inset-0 z-50 bg-[#070b14] flex flex-col items-center justify-center text-center px-4 transition-all">
       <div class="relative flex items-center justify-center w-48 h-48 mb-8">
         <div class="absolute inset-0 rounded-full border border-orange-500/30 animate-ping-slow"></div>
@@ -56,7 +58,9 @@
       <button onclick="endSplashAnimation()" class="mt-6 text-[11px] text-slate-500 hover:text-slate-300 font-semibold underline underline-offset-4 transition-colors">Skip intro →</button>
     </div>
 
+    <!-- Login Card -->
     <div id="loginCard" class="opacity-0 translate-y-6 max-w-md w-full bg-[#0d1424]/90 backdrop-blur-2xl rounded-3xl border border-slate-700/40 shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-all duration-500">
+      
       <div class="p-8 text-center border-b border-slate-800/80 bg-slate-900/30">
         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-orange-600 to-amber-500 text-white rounded-2xl shadow-[0_0_30px_rgba(234,88,12,0.4)] mb-4 border border-orange-400/30">
           <i class="fa-solid fa-shield-halved text-3xl"></i>
@@ -66,6 +70,7 @@
       </div>
 
       <div class="p-8">
+        <!-- Role Toggle Tabs -->
         <div class="grid grid-cols-2 p-1.5 bg-[#141e33] rounded-2xl mb-6 border border-slate-700/40">
           <button id="tabEmployee" onclick="switchTab('employee')" class="py-2.5 text-xs font-bold rounded-xl transition-all shadow-md bg-[#1e293b] border border-slate-600 text-orange-400 flex items-center justify-center gap-2">
             <i class="fa-solid fa-hard-hat"></i> Employee / Rig
@@ -75,6 +80,7 @@
           </button>
         </div>
 
+        <!-- Employee Login Form -->
         <form id="formEmployee" onsubmit="handleLogin(event, 'employee')" class="space-y-4">
           <div>
             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">BADGE ID</label>
@@ -102,6 +108,7 @@
           </button>
         </form>
 
+        <!-- Safety Officer Login Form -->
         <form id="formOfficer" onsubmit="handleLogin(event, 'officer')" class="space-y-4 hidden">
           <div>
             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">OFFICER EMAIL</label>
@@ -129,6 +136,7 @@
           </button>
         </form>
 
+        <!-- Evaluator Demo Direct Access -->
         <div class="mt-8 pt-6 border-t border-slate-800 text-center">
           <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Evaluator Quick Switch</p>
           <div class="flex gap-2">
@@ -144,7 +152,7 @@
     </div>
   </div>
 
-  <!-- VIEW 2: EMPLOYEE FIELD TERMINAL -->
+  <!-- ================= VIEW 2: EMPLOYEE FIELD TERMINAL ================= -->
   <div id="viewEmployee" class="hidden min-h-screen flex flex-col justify-between relative z-20">
     <header class="glass-panel sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between shadow-lg">
       <div class="flex items-center gap-3">
@@ -172,6 +180,7 @@
       </div>
     </header>
 
+    <!-- Employee Profile Modal -->
     <div id="profileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div class="max-w-md w-full glass-panel bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
         <button onclick="toggleProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
@@ -214,6 +223,7 @@
       </div>
     </div>
 
+    <!-- Main Incident Form -->
     <main class="max-w-6xl mx-auto w-full p-6 space-y-6 relative z-10 flex-1">
       <div class="glass-panel rounded-2xl shadow-xl p-6 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-400 opacity-50"></div>
@@ -230,6 +240,7 @@
           </div>
         </div>
 
+        <!-- Facility and Department Selectors -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
@@ -259,6 +270,7 @@
           </div>
         </div>
 
+        <!-- Input Mode Buttons -->
         <div class="grid grid-cols-3 gap-2 mt-5 mb-4">
           <button id="btnTabText" onclick="setInputMode('text')" class="py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)] cursor-pointer">
             <i class="fa-solid fa-keyboard"></i> Text Entry
@@ -271,6 +283,7 @@
           </button>
         </div>
 
+        <!-- Voice Panel -->
         <div id="voicePanel" class="hidden p-4 bg-orange-900/20 border border-orange-500/30 rounded-xl mb-4 text-center">
           <button onclick="startVoiceRecognition()" id="recordBtn" class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto" title="Click to start/stop live speech recognition">
             <i class="fa-solid fa-microphone text-lg"></i>
@@ -294,6 +307,7 @@
             </button>
           </div>
 
+          <!-- Real-Time AI Pre-Triage Card -->
           <div id="aiPreview" class="p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl backdrop-blur-md transition-all duration-300">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
@@ -323,6 +337,7 @@
         </div>
       </div>
 
+      <!-- History -->
       <div class="glass-panel rounded-2xl shadow-xl p-6">
         <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
           <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> My Transmissions
@@ -332,8 +347,8 @@
     </main>
   </div>
 
-  <!-- VIEW 3: SAFETY OFFICER COMMAND CENTER -->
-  <div id="viewOfficer" class="min-h-screen flex flex-col justify-between relative z-20">
+  <!-- ================= VIEW 3: SAFETY OFFICER COMMAND CENTER ================= -->
+  <div id="viewOfficer" class="hidden min-h-screen flex flex-col justify-between relative z-20">
     <header class="bg-[#0b1120] border-b border-slate-800/80 sticky top-0 z-30 px-8 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(234,88,12,0.4)]">
@@ -362,6 +377,7 @@
       </div>
     </header>
 
+    <!-- Officer Profile Modal -->
     <div id="officerProfileModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div class="max-w-md w-full glass-card bg-[#0d1424] border border-slate-700 rounded-3xl p-6 shadow-2xl relative">
         <button onclick="toggleOfficerProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
@@ -397,7 +413,9 @@
       </div>
     </div>
 
+    <!-- Main Officer Body -->
     <main class="max-w-7xl mx-auto w-full p-8 space-y-6 relative z-10 flex-1">
+      <!-- Queue Feed View -->
       <div id="queueView">
         <div class="flex items-center justify-between pb-2">
           <div>
@@ -410,6 +428,7 @@
           </button>
         </div>
 
+        <!-- KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-6 gap-3.5 my-5">
           <div class="p-4 bg-[#0d1424] rounded-2xl border border-slate-800/80 shadow-sm relative overflow-hidden">
             <div class="flex justify-between items-start mb-2">
@@ -455,6 +474,7 @@
           </div>
         </div>
 
+        <!-- Filters & Table -->
         <div class="bg-[#0b1120] rounded-2xl border border-slate-800/90 shadow-2xl overflow-hidden">
           <div class="p-4 border-b border-slate-800 flex flex-col md:flex-row items-center justify-between gap-3">
             <div class="relative w-full md:w-96">
@@ -504,6 +524,7 @@
         </div>
       </div>
 
+      <!-- Detailed Review View -->
       <div id="reviewView" class="hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
           <div>
@@ -821,6 +842,7 @@
       if (typeof renderAllReports === 'function') renderAllReports();
     });
 
+    // SPA VIEW NAVIGATION ENGINE
     function switchView(targetView) {
       document.getElementById('viewSplash').classList.add('hidden');
       document.getElementById('viewEmployee').classList.add('hidden');
@@ -888,7 +910,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       const path = window.location.pathname.toLowerCase();
       if (path.includes('employee')) switchView('employee');
-      else switchView('officer'); // Default officer view for officer.html
+      else if (path.includes('officer')) switchView('officer');
+      else runSplashSequence();
     });
 
     function switchTab(role) {
