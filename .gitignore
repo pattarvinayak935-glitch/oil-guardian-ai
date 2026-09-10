@@ -11,15 +11,9 @@ env/
 .pytest_cache/
 .vercel/
 
-# Unnecessary legacy/backend/data files excluded from Streamlit Cloud deployment
-backend/
-ml_modules/
+# Media files
 *.wav
 *.mp3
-*.csv
-*.npy
-*.pkl
-*.joblib
 
 # Operating System files
 .DS_Store
