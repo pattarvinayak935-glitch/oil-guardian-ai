@@ -472,18 +472,28 @@
               <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Telemetry ID, site, department, or keyword..." class="w-full pl-9 pr-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-all">
             </div>
 
-            <div class="flex items-center gap-2.5 w-full md:w-auto">
-              <select id="riskFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+            <div class="flex flex-wrap md:flex-nowrap items-center gap-2.5 w-full md:w-auto">
+              <select id="riskFilter" onchange="applyFilters()" class="w-full md:w-auto px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
                 <option value="ALL">All Risk Tiers</option>
                 <option value="High Risk">🔥 High Risk</option>
                 <option value="Medium Risk">⚠️ Medium Risk</option>
                 <option value="Low Risk">🛡️ Low Risk</option>
+                <option value="SORT_DATE_DESC">📅 Sort: Date & Time (Newest First)</option>
+                <option value="SORT_DATE_ASC">⏳ Sort: Date & Time (Oldest First)</option>
               </select>
-              <select id="categoryFilter" onchange="applyFilters()" class="w-full px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+              <select id="categoryFilter" onchange="applyFilters()" class="w-full md:w-auto px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
                 <option value="ALL">All Categories</option>
                 <option value="Unsafe Act">Unsafe Act</option>
                 <option value="Unsafe Condition">Unsafe Condition</option>
                 <option value="Near-Miss">Near-Miss</option>
+                <option value="SORT_DATE_DESC">📅 Sort: Date & Time (Newest First)</option>
+                <option value="SORT_DATE_ASC">⏳ Sort: Date & Time (Oldest First)</option>
+              </select>
+              <select id="dateSortFilter" onchange="applyFilters()" class="w-full md:w-auto px-3.5 py-2.5 bg-[#070b14] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 cursor-pointer">
+                <option value="NEWEST">📅 Date & Time: Newest First</option>
+                <option value="OLDEST">⏳ Date & Time: Oldest First</option>
+                <option value="SIF_HIGH">🔥 SIF Risk: High to Low</option>
+                <option value="SIF_LOW">🛡️ SIF Risk: Low to High</option>
               </select>
               <button onclick="resetFilters()" title="Reset Filters" class="px-3 py-2.5 bg-[#121a2d] hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/80 rounded-xl text-xs transition-colors cursor-pointer">
                 <i class="fa-solid fa-filter-circle-xmark"></i>
@@ -1396,6 +1406,12 @@
       applyFilters();
     }
 
+    function parseReportDate(dateStr) {
+      if (!dateStr) return 0;
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? 0 : d.getTime();
+    }
+
     function applyFilters() {
       const reports = getReports();
       const searchInput = document.getElementById('searchInput');
@@ -1404,6 +1420,14 @@
       const selectedRisk = riskFilter ? riskFilter.value : 'ALL';
       const categoryFilter = document.getElementById('categoryFilter');
       const selectedCategory = categoryFilter ? categoryFilter.value : 'ALL';
+      const dateSortFilter = document.getElementById('dateSortFilter');
+      let sortMode = dateSortFilter ? dateSortFilter.value : 'NEWEST';
+
+      if (selectedRisk === 'SORT_DATE_DESC' || selectedCategory === 'SORT_DATE_DESC') {
+        sortMode = 'NEWEST';
+      } else if (selectedRisk === 'SORT_DATE_ASC' || selectedCategory === 'SORT_DATE_ASC') {
+        sortMode = 'OLDEST';
+      }
 
       let hr = 0, mr = 0, lr = 0, inv = 0, res = 0;
       reports.forEach(r => {
@@ -1429,10 +1453,22 @@
 
         const normCategory = (r.category || '').toLowerCase().replace(/[^a-z]/g, '');
         const normSelectedCategory = selectedCategory.toLowerCase().replace(/[^a-z]/g, '');
-        const matchesRisk = (selectedRisk === 'ALL') || (r.risk === selectedRisk);
-        const matchesCategory = (selectedCategory === 'ALL') || (normCategory === normSelectedCategory);
+        const matchesRisk = (selectedRisk === 'ALL' || selectedRisk.startsWith('SORT_')) || (r.risk === selectedRisk);
+        const matchesCategory = (selectedCategory === 'ALL' || selectedCategory.startsWith('SORT_')) || (normCategory === normSelectedCategory);
 
         return matchesSearch && matchesRisk && matchesCategory;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortMode === 'OLDEST') {
+          return parseReportDate(a.date) - parseReportDate(b.date);
+        } else if (sortMode === 'SIF_HIGH') {
+          return (parseFloat(b.sifProb) || 0) - (parseFloat(a.sifProb) || 0);
+        } else if (sortMode === 'SIF_LOW') {
+          return (parseFloat(a.sifProb) || 0) - (parseFloat(b.sifProb) || 0);
+        } else {
+          return parseReportDate(b.date) - parseReportDate(a.date);
+        }
       });
 
       const tb = document.getElementById('reportsTableBody');
@@ -1479,6 +1515,7 @@
       if(document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
       if(document.getElementById('riskFilter')) document.getElementById('riskFilter').value = 'ALL';
       if(document.getElementById('categoryFilter')) document.getElementById('categoryFilter').value = 'ALL';
+      if(document.getElementById('dateSortFilter')) document.getElementById('dateSortFilter').value = 'NEWEST';
       applyFilters();
     }
 
