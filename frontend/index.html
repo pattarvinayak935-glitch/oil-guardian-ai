@@ -1306,7 +1306,7 @@
       const textInput = document.getElementById('reportText');
       const text = textInput ? textInput.value.trim() : '';
       if(!text || text.length < 5) {
-        alert("Please describe the incident or hazard in detail (minimum 5 characters).");
+        showCustomModal("Observation Required", "Please describe the incident or hazard in detail (minimum 5 characters).", "fa-pen-to-square", "warning");
         return;
       }
 
@@ -1315,7 +1315,7 @@
         if (ai && ai.category) {
           applyAiResult(ai);
         } else {
-          alert("⚠️ Mandatory AI Analysis Pending: The system must categorize the incident (Unsafe Act / Unsafe Condition / Near-Miss) and evaluate SIF probability before transmission.");
+          showCustomModal("AI Triage Pending", "The system must categorize the incident (Unsafe Act / Unsafe Condition / Near-Miss) and evaluate SIF probability before transmission.", "fa-brain", "warning");
           return;
         }
       }
@@ -1358,7 +1358,7 @@
       renderHistory();
       renderAllReports(); // Update Officer Telemetry Feed instantly
 
-      alert(`✅ Report ${reportId} successfully transmitted to Safety Operations Command Center!\n\nYou can click 'Open Safety Console' at the top right to view it in the Officer Dashboard.`);
+      showCustomModal("Report Transmitted Successfully", `Report <b>${reportId}</b> has been successfully transmitted to the Safety Operations Command Center!<br><br>You can click 'Open Safety Console' at the top right to view it in the Officer Dashboard.`, "fa-paper-plane", "success");
     }
 
     function renderHistory() {
@@ -1619,9 +1619,70 @@
         notifyDataSync();
       }
 
-      alert(`Status update authorized: ${newStatus}`);
+      showCustomModal("Status Authorization Complete", `Safety Officer authorization complete.<br>Incident status updated to <b>[${newStatus}]</b>.`, "fa-user-shield", "info");
       renderNotes();
     }
+
+    function showCustomModal(title, message, iconClass = 'fa-circle-check', type = 'success') {
+      const modal = document.getElementById('customModal');
+      const card = document.getElementById('customModalCard');
+      const icon = document.getElementById('customModalIcon');
+      const titleEl = document.getElementById('customModalTitle');
+      const msgEl = document.getElementById('customModalMessage');
+
+      if (!modal || !card) return;
+
+      titleEl.innerText = title;
+      msgEl.innerHTML = message;
+
+      if (type === 'success') {
+        icon.className = "w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-[0_0_25px_rgba(16,185,129,0.5)] border border-emerald-400/40";
+        icon.innerHTML = `<i class="fa-solid ${iconClass || 'fa-circle-check'}"></i>`;
+        card.className = "max-w-md w-full bg-[#0d1424]/95 border border-emerald-500/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(16,185,129,0.3)] text-center relative transform scale-95 transition-all duration-300 backdrop-blur-2xl";
+      } else if (type === 'warning' || type === 'pending') {
+        icon.className = "w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-[0_0_25px_rgba(245,158,11,0.5)] border border-amber-400/40";
+        icon.innerHTML = `<i class="fa-solid ${iconClass || 'fa-triangle-exclamation'}"></i>`;
+        card.className = "max-w-md w-full bg-[#0d1424]/95 border border-amber-500/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(245,158,11,0.3)] text-center relative transform scale-95 transition-all duration-300 backdrop-blur-2xl";
+      } else if (type === 'info') {
+        icon.className = "w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-[0_0_25px_rgba(59,130,246,0.5)] border border-blue-400/40";
+        icon.innerHTML = `<i class="fa-solid ${iconClass || 'fa-user-shield'}"></i>`;
+        card.className = "max-w-md w-full bg-[#0d1424]/95 border border-blue-500/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(59,130,246,0.3)] text-center relative transform scale-95 transition-all duration-300 backdrop-blur-2xl";
+      }
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeCustomModal() {
+      const modal = document.getElementById('customModal');
+      const card = document.getElementById('customModalCard');
+      if (!modal || !card) return;
+      
+      modal.classList.add('opacity-0');
+      card.classList.remove('scale-100');
+      card.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
   </script>
+
+  <!-- CUSTOM UI MODAL DIALOG -->
+  <div id="customModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
+    <div id="customModalCard" class="max-w-md w-full bg-[#0d1424]/95 border border-slate-700/60 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,0,0,0.9)] text-center relative transform scale-95 transition-all duration-300 backdrop-blur-2xl">
+      <div id="customModalIcon" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-[0_0_20px_rgba(234,88,12,0.5)] border border-orange-400/30">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 id="customModalTitle" class="text-xl font-extrabold text-white tracking-tight mb-2">Notification</h3>
+      <div id="customModalMessage" class="text-xs font-semibold text-slate-300 leading-relaxed mb-6 space-y-1"></div>
+      <button onclick="closeCustomModal()" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl text-sm shadow-[0_0_25px_rgba(234,88,12,0.4)] transition-all cursor-pointer">
+        Acknowledge
+      </button>
+    </div>
+  </div>
 </body>
 </html>
