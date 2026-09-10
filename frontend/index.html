@@ -1800,12 +1800,16 @@
       const card = document.getElementById('forgotPasswordCard');
       const selectRole = document.getElementById('resetRole');
       const inputId = document.getElementById('resetId');
+      const inputMobile = document.getElementById('resetMobile');
 
       if (selectRole) selectRole.value = role;
       if (inputId) {
         inputId.value = role === 'employee' 
           ? (document.getElementById('empId')?.value || 'oil-79655')
           : (document.getElementById('officerId')?.value || 'hse@oilindia.in');
+      }
+      if (inputMobile) {
+        inputMobile.value = role === 'employee' ? '+91 98450 78210' : '+91 94350 12345';
       }
 
       if (!modal || !card) return;
@@ -1815,6 +1819,14 @@
         card.classList.remove('scale-95');
         card.classList.add('scale-100');
       }, 10);
+    }
+
+    function updateResetMobilePlaceholder() {
+      const selectRole = document.getElementById('resetRole');
+      const inputMobile = document.getElementById('resetMobile');
+      if (selectRole && inputMobile) {
+        inputMobile.value = selectRole.value === 'employee' ? '+91 98450 78210' : '+91 94350 12345';
+      }
     }
 
     function closeForgotPasswordModal() {
@@ -1827,15 +1839,38 @@
       setTimeout(() => { modal.classList.add('hidden'); }, 300);
     }
 
-    function generateResetOtp() {
+    function sendMobileOtp() {
+      const mobileInput = document.getElementById('resetMobile');
+      const mobile = mobileInput ? mobileInput.value.trim() : '+91 98450 78210';
       const code = Math.floor(100000 + Math.random() * 900000);
+      const formattedCode = `${code.toString().slice(0,3)}-${code.toString().slice(3)}`;
+      
       const otpInput = document.getElementById('resetOtp');
-      if (otpInput) otpInput.value = `${code.toString().slice(0,3)}-${code.toString().slice(3)}`;
+      if (otpInput) otpInput.value = formattedCode;
+
+      const notice = document.getElementById('otpSentNotice');
+      if (notice) {
+        notice.classList.remove('hidden');
+        notice.innerHTML = `<i class="fa-solid fa-circle-check"></i> SMS OTP <b>[${formattedCode}]</b> sent to ${mobile}`;
+      }
+
+      showCustomModal(
+        "Mobile OTP Sent Successfully 📲",
+        `A 6-digit Security Verification Code <b>[${formattedCode}]</b> has been dispatched via SMS to registered mobile number:<br><br><span class="mono text-amber-300 font-bold text-sm bg-slate-900/90 px-3 py-1.5 rounded-lg border border-amber-500/40 inline-block">${mobile}</span><br><br><span class="text-[11px] text-slate-400">Please enter this verification code to complete password reset.</span>`,
+        "fa-comment-sms",
+        "pending"
+      );
+    }
+
+    function generateResetOtp() {
+      sendMobileOtp();
     }
 
     function handlePasswordResetSubmit(e) {
       e.preventDefault();
       const resetId = document.getElementById('resetId').value.trim();
+      const mobile = document.getElementById('resetMobile')?.value.trim() || '+91 98450 78210';
+      const otp = document.getElementById('resetOtp')?.value.trim() || '';
       const newPass = document.getElementById('resetNewPass').value.trim();
       const role = document.getElementById('resetRole').value;
 
@@ -1848,9 +1883,9 @@
       }
 
       showCustomModal(
-        "Password Reset Authorized",
-        `Password for account <b>${resetId}</b> has been updated successfully.<br><br>You can now log in with your new password.`,
-        "fa-key",
+        "Mobile OTP Verified & Password Reset",
+        `Mobile OTP <b>[${otp}]</b> sent to <b>${mobile}</b> has been successfully verified.<br><br>Password for account <b>${resetId}</b> has been updated.<br>You can now log in with your new password.`,
+        "fa-mobile-screen-button",
         "success"
       );
     }
@@ -1931,7 +1966,7 @@
     </div>
   </div>
 
-  <!-- FORGOT PASSWORD MODAL -->
+  <!-- FORGOT PASSWORD MODAL (MOBILE OTP AUTHENTICATION) -->
   <div id="forgotPasswordModal" class="fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
     <div id="forgotPasswordCard" class="max-w-md w-full bg-[#0d1424]/95 border border-amber-500/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(245,158,11,0.3)] relative transform scale-95 transition-all duration-300 backdrop-blur-2xl">
       <button onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm w-8 h-8 rounded-full bg-slate-800/60 flex items-center justify-center cursor-pointer">
@@ -1940,16 +1975,16 @@
       
       <div class="text-center mb-4">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center text-white text-xl mx-auto mb-2 shadow-[0_0_20px_rgba(245,158,11,0.5)] border border-amber-400/40">
-          <i class="fa-solid fa-key"></i>
+          <i class="fa-solid fa-mobile-screen-button"></i>
         </div>
-        <h3 class="text-lg font-extrabold text-white tracking-tight">Security Password Reset</h3>
-        <p class="text-[11px] font-semibold text-slate-400 mt-0.5">SIH26165 · Account Authentication</p>
+        <h3 class="text-lg font-extrabold text-white tracking-tight">Mobile OTP Authentication</h3>
+        <p class="text-[11px] font-semibold text-slate-400 mt-0.5">SIH26165 · Mobile SMS Security Verification</p>
       </div>
 
       <form onsubmit="handlePasswordResetSubmit(event)" class="space-y-3 text-left">
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ACCOUNT TYPE</label>
-          <select id="resetRole" class="w-full px-3 py-2.5 bg-[#11192e] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-orange-500">
+          <select id="resetRole" onchange="updateResetMobilePlaceholder()" class="w-full px-3 py-2.5 bg-[#11192e] border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-orange-500">
             <option value="employee">👷 Field Employee / Rig Worker</option>
             <option value="officer">📊 Safety Officer (Lead / Inspector)</option>
           </select>
@@ -1961,11 +1996,32 @@
         </div>
 
         <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">SECURITY RESET CODE (OTP)</label>
-            <button type="button" onclick="generateResetOtp()" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer">Generate Code</button>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">REGISTERED MOBILE NUMBER</label>
+          <div class="relative flex gap-2">
+            <div class="relative flex-1">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-xs">
+                <i class="fa-solid fa-phone"></i>
+              </span>
+              <input type="tel" id="resetMobile" required value="+91 98450 78210" placeholder="+91 98*** *****" class="w-full pl-9 pr-3 py-2.5 bg-[#11192e] border border-slate-700/80 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
+            </div>
+            <button type="button" onclick="sendMobileOtp()" class="px-3 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs shadow-md transition-all shrink-0 cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-paper-plane text-[10px]"></i>
+              <span>Send OTP</span>
+            </button>
           </div>
-          <input type="text" id="resetOtp" required value="794-201" class="w-full px-3.5 py-2.5 bg-[#11192e] border border-slate-700/80 rounded-xl text-xs font-semibold text-amber-300 tracking-wider focus:outline-none focus:border-orange-500">
+          <p id="otpSentNotice" class="text-[10px] text-emerald-400 font-semibold mt-1 hidden flex items-center gap-1">
+            <i class="fa-solid fa-circle-check"></i> SMS OTP dispatched to registered mobile number
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ENTER 6-DIGIT MOBILE OTP</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-amber-400 text-xs">
+              <i class="fa-solid fa-comment-sms"></i>
+            </span>
+            <input type="text" id="resetOtp" required value="849-203" placeholder="Enter OTP received via SMS" class="w-full pl-10 pr-3.5 py-2.5 bg-[#11192e] border border-amber-500/60 rounded-xl text-xs font-bold text-amber-300 tracking-widest focus:outline-none focus:border-orange-500">
+          </div>
         </div>
 
         <div>
@@ -1973,8 +2029,9 @@
           <input type="password" id="resetNewPass" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-[#11192e] border border-slate-700/80 rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-orange-500">
         </div>
 
-        <button type="submit" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all cursor-pointer">
-          Authorize & Update Password
+        <button type="submit" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-xl text-xs shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shield-check"></i>
+          <span>Verify Mobile OTP & Reset Password</span>
         </button>
       </form>
     </div>
