@@ -967,24 +967,22 @@
 
       const t = cleanText.toLowerCase();
 
-      let nmScore = 15.0;
-      if (/(slip|fall|near miss|almost|dropped|whipped|close call|narrowly|near-miss|missed)/i.test(t)) nmScore += 45.0;
-      if (/(crane|hoist|rig|drill|pipe|pressure|hydraulic|height|scaffold|high energy|tether)/i.test(t)) nmScore += 25.0;
-      if (/(no lanyard|without harness|untethered|leak|sour gas|pitting|corrosion)/i.test(t)) nmScore += 12.0;
-      nmScore = Math.min(98.5, Math.max(8.0, nmScore));
+      // Category rule evaluation
+      let nmScore = 10.0;
+      if (/(near miss|near-miss|close call|almost|narrowly|slipped|whipped|dropped|fell near|barely missed|snapped|whip|clamp slipped|hose slipped)/i.test(t)) nmScore += 55.0;
+      if (/(crane hoist|rigging|drill pipe|pipe makeup|high energy|hydraulic hose whipped)/i.test(t)) nmScore += 25.0;
 
       let uaScore = 10.0;
-      if (/(observed|worker|operator|crew|contractor|without|no ppe|bypassed|ignored|not wearing|unauthorized|tethered)/i.test(t)) uaScore += 45.0;
-      if (/(harness|lanyard|height|scaffold|loto|lockout|live wire|confined space|monkey board)/i.test(t)) uaScore += 35.0;
-      uaScore = Math.min(97.0, Math.max(6.0, uaScore));
+      if (/(without|no|not wearing|failed to|did not|bypassed|ignored|unauthorized|improper|careless)\s*[\w\s]{0,25}\s*(harness|lanyard|ppe|loto|lockout|permit|gas|test|testing|standby|mask|glasses|shield|protection|guard|isolation|procedure)/i.test(t) || /(entered without|working without|operating without)/i.test(t)) uaScore += 55.0;
+      if (/(lanyard|tether|lockout|live wire|confined space|monkey board|ladder without)/i.test(t)) uaScore += 25.0;
 
       let ucScore = 10.0;
-      if (/(leak|corrosion|pitting|flange|damaged|broken|exposed|faulty|clamp|pressure|guard|whip|rusty|decay|malfunction)/i.test(t)) ucScore += 50.0;
-      if (/(high pressure|sour gas|gas|line|valve|pipe|furnace|voltage|hydraulic hose)/i.test(t)) ucScore += 30.0;
-      ucScore = Math.min(98.2, Math.max(7.0, ucScore));
+      if (/(leak|leaking|corrosion|pitting|flange|damaged|broken|exposed|rusty|decay|cracked|faulty|malfunction|slippery|spill|gasket|pressure line|valve leak)/i.test(t)) ucScore += 55.0;
+      if (/(sour gas|pipeline|high pressure valve|furnace|voltage|transformer|scaffold structure)/i.test(t)) ucScore += 25.0;
 
       let category = "Unsafe Condition";
       let dominantScore = ucScore;
+
       if (nmScore >= ucScore && nmScore >= uaScore) {
         category = "Near-Miss";
         dominantScore = nmScore;
@@ -993,9 +991,16 @@
         dominantScore = uaScore;
       }
 
+      // Calculate SIF Probability based on hazard risk indicators
+      let sifProbVal = dominantScore;
+      if (/(high pressure|sour gas|confined space|12m|11m|height|fall|ignition|flange leak|hose whipped)/i.test(t)) {
+        sifProbVal = Math.max(sifProbVal, 88.5);
+      }
+      sifProbVal = Math.min(99.2, Math.max(12.0, sifProbVal));
+
       let riskTier = "Low Risk";
-      if (dominantScore >= 75.0) riskTier = "High Risk";
-      else if (dominantScore >= 45.0) riskTier = "Medium Risk";
+      if (sifProbVal >= 75.0) riskTier = "High Risk";
+      else if (sifProbVal >= 45.0) riskTier = "Medium Risk";
 
       let iogpRule = "Operational Safety";
       if (/(lockout|loto|isolation|energized|live wire)/i.test(t)) iogpRule = "Energy Isolation";
@@ -1007,7 +1012,7 @@
       return {
         category: category,
         risk_tier: riskTier,
-        sif_prob: dominantScore.toFixed(1) + "%",
+        sif_prob: sifProbVal.toFixed(1) + "%",
         iogp_rule: iogpRule,
         extracted_text: cleanText,
         ensemble_breakdown: { near_miss: nmScore, unsafe_act: uaScore, unsafe_condition: ucScore }
