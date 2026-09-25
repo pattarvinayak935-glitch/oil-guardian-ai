@@ -349,6 +349,19 @@
                 <p id="previewRule" class="text-xs font-bold text-white mt-0.5">-</p>
               </div>
             </div>
+
+            <div id="controlEvidencePanel" class="hidden mt-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] uppercase font-bold text-slate-500">
+                  Control Evidence
+                </span>
+                <span id="controlReviewStatus"
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold">
+                </span>
+              </div>
+              <div id="controlEvidenceList" class="flex flex-wrap gap-1.5"></div>
+            </div>
+
           </div>
 
           <button id="btnSubmitReport" onclick="submitReport()" disabled class="w-full py-3.5 bg-slate-800/80 border border-slate-700 text-slate-500 font-bold rounded-xl text-sm opacity-60 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
@@ -994,245 +1007,97 @@
       document.getElementById('officerProfileModal').classList.toggle('hidden');
     }
 
-    function processTextEnsemble(text) {
+    async function processTextEnsemble(text) {
       const cleanText = (text || "").trim();
+
       if (!cleanText) {
         return {
           category: "None",
           risk_tier: "Low Risk",
           sif_prob: "0.0%",
           iogp_rule: "Operational Safety",
-          extracted_text: "",
-          ensemble_breakdown: { near_miss: 0.0, unsafe_act: 0.0, unsafe_condition: 0.0 }
+          extracted_text: ""
         };
       }
 
       const t = cleanText.toLowerCase();
 
-      // Category rule evaluation
+      // Existing UI category-routing logic.
+      // SIF evaluation now comes from the trained Python inference API.
       let nmScore = 10.0;
       if (/(near miss|near-miss|close call|almost|narrowly|slipped|whipped|dropped|fell near|barely missed|snapped|whip|clamp slipped|hose slipped)/i.test(t)) nmScore += 55.0;
       if (/(crane hoist|rigging|drill pipe|pipe makeup|high energy|hydraulic hose whipped)/i.test(t)) nmScore += 25.0;
 
       let uaScore = 10.0;
-      if (/(without|no|not wearing|failed to|did not|bypassed|ignored|unauthorized|improper|careless)\s*[\w\s]{0,25}\s*(harness|lanyard|ppe|loto|lockout|permit|gas|test|testing|standby|mask|glasses|shield|protection|guard|isolation|procedure)/i.test(t) || /(entered without|working without|operating without)/i.test(t)) uaScore += 55.0;
+      if (/(without|no|not wearing|failed to|did not|bypassed|ignored|unauthorized|improper|careless)\s*[\w\s]{0,25}\s*(harness|lanyard|ppe|loto|lockout|permit|gas|test|testing|standby|mask|glasses|shield|protection|guard|isolation|procedure)/i.test(t)
+          || /(entered without|working without|operating without)/i.test(t)) {
+        uaScore += 55.0;
+      }
       if (/(lanyard|tether|lockout|live wire|confined space|monkey board|ladder without)/i.test(t)) uaScore += 25.0;
 
       let ucScore = 10.0;
       if (/(leak|leaking|corrosion|pitting|flange|damaged|broken|exposed|rusty|decay|cracked|faulty|malfunction|slippery|spill|gasket|pressure line|valve leak)/i.test(t)) ucScore += 55.0;
       if (/(sour gas|pipeline|high pressure valve|furnace|voltage|transformer|scaffold structure)/i.test(t)) ucScore += 25.0;
 
-      let category = "Unsafe Condition";
-      let dominantScore = ucScore;
+      // Explicit Unsafe Act indicators.
+      // These must take priority over the general category heuristics.
+      const explicitUnsafeAct =
+        /(loto|lockout|lock-out|tagout|tag-out|energy isolation|energy-isolation|without isolating|without isolation|failed to isolate|did not isolate|no isolation|isolation was not applied|live energy|energized equipment|unexpectedly started|unexpected start|machine started while|reaching into.*moving|hands.*moving machinery|bypassed.*interlock|interlock.*bypassed)/i.test(t);
 
-      if (nmScore >= ucScore && nmScore >= uaScore) {
+      // Explicit Near-Miss indicators.
+      const explicitNearMiss =
+        /(near miss|near-miss|close call|almost hit|almost struck|almost fell|narrowly avoided|barely missed|passed close|passed closely|came close|came very close|swung unexpectedly|swinging load|suspended load.*(swung|passed|came close)|load.*passed close|load.*nearly|worker.*not struck|worker.*was not struck|no injury.*near|nearly struck)/i.test(t);
+
+      let category = "Unsafe Condition";
+
+      if (explicitUnsafeAct) {
+        category = "Unsafe Act";
+      } else if (explicitNearMiss) {
         category = "Near-Miss";
-        dominantScore = nmScore;
       } else if (uaScore >= ucScore && uaScore >= nmScore) {
         category = "Unsafe Act";
-        dominantScore = uaScore;
-      }
-
-      // Calculate SIF Probability based on hazard risk indicators
-      let sifProbVal = dominantScore;
-      if (/(high pressure|sour gas|confined space|12m|11m|height|fall|ignition|flange leak|hose whipped)/i.test(t)) {
-        sifProbVal = Math.max(sifProbVal, 88.5);
-      }
-      sifProbVal = Math.min(99.2, Math.max(12.0, sifProbVal));
-
-      let riskTier = "Low Risk";
-      if (sifProbVal >= 75.0) riskTier = "High Risk";
-      else if (sifProbVal >= 45.0) riskTier = "Medium Risk";
-
-      let iogpRule = "Operational Safety";
-      if (/(lockout|loto|isolation|energized|live wire)/i.test(t)) iogpRule = "Energy Isolation";
-      else if (/(confined space|gas test|atmosphere)/i.test(t)) iogpRule = "Confined Space";
-      else if (/(fall|height|scaffold|harness|monkey board|ladder)/i.test(t)) iogpRule = "Working at Height";
-      else if (/(leak|gas|flange|corrosion|pressure|hydraulic)/i.test(t)) iogpRule = "Asset Integrity / Pressure";
-      else if (/(crane|hoist|sling|lifting|rigging|heavy)/i.test(t)) iogpRule = "Mechanical Lifting";
-
-      return {
-        category: category,
-        risk_tier: riskTier,
-        sif_prob: sifProbVal.toFixed(1) + "%",
-        iogp_rule: iogpRule,
-        extracted_text: cleanText,
-        ensemble_breakdown: { near_miss: nmScore, unsafe_act: uaScore, unsafe_condition: ucScore }
-      };
-    }
-
-    function setInputMode(mode) {
-      document.getElementById('voicePanel').classList.add('hidden');
-      if (document.getElementById('ocrPanel')) document.getElementById('ocrPanel').classList.add('hidden');
-
-      const resetClass = "py-2 text-xs font-bold rounded-lg border bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white cursor-pointer";
-      const activeClass = "py-2 text-xs font-bold rounded-lg border bg-orange-500/10 border-orange-500/30 text-orange-400 shadow-[0_0_10px_rgba(234,88,12,0.15)] cursor-pointer";
-      document.getElementById('btnTabText').className = resetClass;
-      document.getElementById('btnTabVoice').className = resetClass;
-      document.getElementById('btnTabOcr').className = resetClass;
-
-      if (mode === 'text') { 
-        document.getElementById('btnTabText').className = activeClass; 
-      } else if (mode === 'voice') { 
-        document.getElementById('btnTabVoice').className = activeClass; 
-        document.getElementById('voicePanel').classList.remove('hidden'); 
-      } else if (mode === 'ocr') {
-        document.getElementById('btnTabOcr').className = activeClass;
-        if (document.getElementById('ocrPanel')) document.getElementById('ocrPanel').classList.remove('hidden');
-      }
-    }
-
-    let voiceRecognition = null;
-    let isVoiceRecording = false;
-
-    function startVoiceRecognition() {
-      const recordBtn = document.getElementById('recordBtn');
-      const recordStatus = document.getElementById('recordStatus');
-      const textInput = document.getElementById('reportText');
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (isVoiceRecording) {
-        if (voiceRecognition) {
-          try { voiceRecognition.stop(); } catch(e){}
-        }
-        isVoiceRecording = false;
-        if (recordBtn) {
-          recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
-          recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
-        }
-        if (recordStatus) {
-          recordStatus.innerText = "✅ Voice recording finalized. AI Model categorizing observation...";
-          recordStatus.className = "text-xs font-bold text-emerald-400";
-        }
-        runAiPreAssessment();
-        return;
-      }
-
-      if (!SpeechRecognition) {
-        simulateAudioRecord();
-        return;
+      } else if (nmScore >= ucScore && nmScore >= uaScore) {
+        category = "Near-Miss";
       }
 
       try {
-        voiceRecognition = new SpeechRecognition();
-        voiceRecognition.continuous = true;
-        voiceRecognition.interimResults = true;
-        voiceRecognition.lang = 'en-US';
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/analyze",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              text: cleanText,
+              category: category
+            })
+          }
+        );
 
-        voiceRecognition.onstart = function() {
-          isVoiceRecording = true;
-          if (recordBtn) {
-            recordBtn.className = "w-12 h-12 bg-rose-600 text-white rounded-full shadow-[0_0_25px_rgba(244,63,94,0.8)] mb-2 animate-pulse flex items-center justify-center cursor-pointer mx-auto";
-            recordBtn.innerHTML = '<i class="fa-solid fa-square text-lg"></i>';
-          }
-          if (recordStatus) {
-            recordStatus.innerText = "🎙️ Listening... Speak your observation clearly now! (Click icon to stop)";
-            recordStatus.className = "text-xs font-bold text-rose-400 animate-pulse";
-          }
-        };
-
-        voiceRecognition.onresult = function(event) {
-          let transcript = '';
-          for (let i = 0; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript + ' ';
-          }
-          if (textInput && transcript.trim()) {
-            textInput.value = transcript.trim();
-            runAiPreAssessment();
-          }
-        };
-
-        voiceRecognition.onerror = function(event) {
-          console.warn("Speech recognition notice:", event.error);
-          isVoiceRecording = false;
-          if (recordBtn) {
-            recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
-            recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
-          }
-          if (event.error === 'not-allowed') {
-            if (recordStatus) {
-              recordStatus.innerText = "⚠️ Microphone permission denied. Please grant microphone access in your browser header.";
-              recordStatus.className = "text-xs font-bold text-amber-400";
-            }
-          } else {
-            simulateAudioRecord();
-          }
-        };
-
-        voiceRecognition.onend = function() {
-          isVoiceRecording = false;
-          if (recordBtn) {
-            recordBtn.className = "w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] mb-2 hover:scale-105 transition-transform flex items-center justify-center cursor-pointer mx-auto";
-            recordBtn.innerHTML = '<i class="fa-solid fa-microphone text-lg"></i>';
-          }
-          if (textInput && textInput.value.trim()) {
-            if (recordStatus) {
-              recordStatus.innerText = "✅ Voice input transcribed & AI categorized!";
-              recordStatus.className = "text-xs font-bold text-emerald-400";
-            }
-            runAiPreAssessment();
-          }
-        };
-
-        voiceRecognition.start();
-      } catch (e) {
-        console.error("Speech recognition error:", e);
-        simulateAudioRecord();
-      }
-    }
-
-    function handleOcrScan(event) {
-      const file = event.target.files[0];
-      const ocrStatus = document.getElementById('ocrStatus');
-      if (!file) return;
-
-      if (ocrStatus) ocrStatus.innerText = `🔍 Scanning "${file.name}" with OCR Neural Engine...`;
-      setTimeout(() => {
-        const textInput = document.getElementById('reportText');
-        if (textInput) {
-          textInput.value = `[OCR SCAN: ${file.name}] High pressure gas flange leak observed on CDU unit line #4 during routine inspection. Sour gas odor detected.`;
+        if (!response.ok) {
+          throw new Error("Inference API returned HTTP " + response.status);
         }
-        if (ocrStatus) {
-          ocrStatus.innerText = "✅ Field slip text extracted successfully!";
-          ocrStatus.className = "text-[11px] font-bold text-emerald-400";
+
+        const result = await response.json();
+
+        if (result.error) {
+          throw new Error(result.error);
         }
-        runAiPreAssessment();
-      }, 1000);
-    }
 
-    function simulateAudioRecord() {
-      const recordStatus = document.getElementById('recordStatus');
-      if (recordStatus) recordStatus.innerText = "Transcribing Whisper AI...";
-      setTimeout(() => {
-        const textInput = document.getElementById('reportText');
-        if (textInput) textInput.value = "Crew adjusting monkey board at 14m without fall protection lanyard.";
-        if (recordStatus) {
-          recordStatus.innerText = "✅ Transcribed successfully!";
-          recordStatus.className = "text-xs font-bold text-emerald-400";
-        }
-        runAiPreAssessment();
-      }, 800);
-    }
+        return result;
 
-    function loadScenario(type) {
-      if(type==='high') document.getElementById('reportText').value = "Worker at 12m height on monkey board without tethered lanyard.";
-      else document.getElementById('reportText').value = "Crane hoist sling slipped while moving drill collar.";
-      runAiPreAssessment();
-    }
+      } catch (error) {
+        console.error("OIL Guardian AI API error:", error);
 
-    function updateSubmitButtonState(enabled, aiResult = null) {
-      const btn = document.getElementById('btnSubmitReport');
-      if (!btn) return;
-
-      if (enabled && aiResult) {
-        btn.disabled = false;
-        btn.className = "w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 text-white font-bold rounded-xl text-sm shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 transition-all cursor-pointer";
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Transmit Report (${aiResult.category} · ${aiResult.risk_tier})`;
-      } else {
-        btn.disabled = true;
-        btn.className = "w-full py-3.5 bg-slate-800/80 border border-slate-700 text-slate-500 font-bold rounded-xl text-sm opacity-60 cursor-not-allowed flex items-center justify-center gap-2 transition-all";
-        btn.innerHTML = `<i class="fa-solid fa-lock text-slate-400"></i> Awaiting AI Classification & SIF Triage...`;
+        return {
+          category: category,
+          risk_tier: "Low Risk",
+          sif_prob: "0.0%",
+          iogp_rule: "Operational Safety",
+          extracted_text: cleanText,
+          api_error: true
+        };
       }
     }
 
@@ -1254,6 +1119,45 @@
       if (document.getElementById('previewSif')) document.getElementById('previewSif').innerText = result.sif_prob || '0.0%';
       if (document.getElementById('previewRule')) document.getElementById('previewRule').innerText = result.iogp_rule || 'Operational Safety';
 
+      const evidencePanel = document.getElementById('controlEvidencePanel');
+      const evidenceList = document.getElementById('controlEvidenceList');
+      const reviewStatus = document.getElementById('controlReviewStatus');
+
+      if (evidencePanel && evidenceList && reviewStatus) {
+        const evidence = Array.isArray(result.control_evidence)
+          ? result.control_evidence
+          : [];
+
+        evidenceList.innerHTML = '';
+
+        if (evidence.length > 0) {
+          evidencePanel.classList.remove('hidden');
+
+          evidence.forEach(item => {
+            const tag = document.createElement('span');
+            tag.className =
+              "px-2 py-1 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20";
+            tag.innerText = item;
+            evidenceList.appendChild(tag);
+          });
+
+          if (result.review_required) {
+            reviewStatus.innerText = "HSE Review Required";
+            reviewStatus.className =
+              "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20";
+          } else {
+            reviewStatus.innerText = "Controls Detected";
+            reviewStatus.className =
+              "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20";
+          }
+        } else {
+          evidencePanel.classList.add('hidden');
+          reviewStatus.innerText = '';
+        }
+      }
+
+
+
       updateSubmitButtonState(true, result);
     }
 
@@ -1270,15 +1174,24 @@
         if(document.getElementById('previewType')) document.getElementById('previewType').innerText = '-';
         if(document.getElementById('previewSif')) document.getElementById('previewSif').innerText = '-';
         if(document.getElementById('previewRule')) document.getElementById('previewRule').innerText = '-';
+
+        const evidencePanel = document.getElementById('controlEvidencePanel');
+        const evidenceList = document.getElementById('controlEvidenceList');
+        const reviewStatus = document.getElementById('controlReviewStatus');
+
+        if (evidencePanel) evidencePanel.classList.add('hidden');
+        if (evidenceList) evidenceList.innerHTML = '';
+        if (reviewStatus) reviewStatus.innerText = '';
+
         
         updateSubmitButtonState(false);
         return;
       }
 
       clearTimeout(aiTimer);
-      aiTimer = setTimeout(() => {
-        const aiResult = processTextEnsemble(text);
-        applyAiResult(aiResult);
+      aiTimer = setTimeout(async () => {
+        const aiResult = await processTextEnsemble(text);
+        if (aiResult) applyAiResult(aiResult);
       }, 100);
     }
 
@@ -1336,7 +1249,7 @@
       return defaultData;
     }
 
-    function submitReport() {
+    async function submitReport() {
       const textInput = document.getElementById('reportText');
       const text = textInput ? textInput.value.trim() : '';
       if(!text || text.length < 5) {
@@ -1345,7 +1258,7 @@
       }
 
       if (!latestAiResult || !latestAiResult.category) {
-        const ai = processTextEnsemble(text);
+        const ai = await processTextEnsemble(text);
         if (ai && ai.category) {
           applyAiResult(ai);
         } else {

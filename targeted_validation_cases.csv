@@ -1,0 +1,42 @@
+﻿id,category,type,report,expected_sif
+UA-CS-01,Unsafe Act,Dangerous,"A worker entered an oxygen-deficient confined space without gas testing or an approved permit. No attendant or rescue team was available.",true
+UA-CS-01-C,Unsafe Act,Controlled,"A worker entered the confined space only after the permit was approved, the atmosphere was tested and confirmed safe, continuous gas monitoring was active, an attendant was stationed outside, and a rescue team was available.",false
+UA-CS-02,Unsafe Act,Dangerous,"A worker entered a process vessel without confirming atmospheric conditions and without isolating the connected energy sources. The worker started work inside the vessel before the required confined-space controls were established.",true
+UA-CS-02-C,Unsafe Act,Controlled,"Before entry into the process vessel, all connected energy sources were isolated and locked out, the vessel was made safe, the atmosphere was tested, continuous monitoring was established, and an approved confined-space permit was issued.",false
+UA-CS-03,Unsafe Act,Dangerous,"A worker attempted to enter a confined space without a permit, without continuous gas monitoring, and without a retrieval or rescue plan. Another worker entered behind him to assist without proper controls.",true
+UA-CS-03-C,Unsafe Act,Controlled,"Confined-space entry was performed under an approved permit with atmospheric testing, continuous gas monitoring, an attendant, a retrieval system, and a documented rescue plan with trained responders.",false
+
+NM-SL-01,Near Miss,Dangerous,"A suspended pipe section swung unexpectedly during a crane lift and passed close to a worker who was standing inside the lifting area. The worker moved away before being struck.",true
+NM-SL-01-C,Near Miss,Controlled,"A crane lift of a pipe section was carried out inside a barricaded exclusion zone. A trained rigger controlled the load with tag lines and workers remained outside the lifting area.",false
+NM-SL-02,Near Miss,Dangerous,"A suspended load shifted suddenly while being lifted and moved toward two workers. The workers stepped back just before the load passed close to them.",true
+NM-SL-02-C,Near Miss,Controlled,"The suspended load was inspected before lifting, secured correctly, controlled with tag lines, and lifted only after the exclusion zone was established and all personnel were clear.",false
+NM-SL-03,Near Miss,Dangerous,"A crane load swung across a walkway and nearly struck a worker who was walking nearby. The worker stopped and moved clear before contact occurred.",true
+NM-SL-03-C,Near Miss,Controlled,"The crane lifting path was planned in advance, the walkway was isolated with barricades, and a spotter ensured that no person entered the lifting area while the load was suspended.",false
+
+NM-HH-01,Near Miss,Dangerous,"A high-pressure hydraulic hose failed during equipment operation and began whipping near a maintenance worker. The worker moved away before being hit.",true
+NM-HH-01-C,Near Miss,Controlled,"The hydraulic system was isolated and depressurized before maintenance. The damaged hose was replaced, pressure was checked, and the equipment was returned to service after verification.",false
+NM-HH-02,Near Miss,Dangerous,"A hydraulic line ruptured unexpectedly and the pressurized hose whipped toward the operator. The operator stepped clear and avoided contact.",true
+NM-HH-02-C,Near Miss,Controlled,"Before work began, the hydraulic equipment was stopped, energy was isolated, hydraulic pressure was fully released, and the defective line was replaced using the approved procedure.",false
+NM-HH-03,Near Miss,Dangerous,"A leaking hydraulic hose moved violently when pressure changed and came close to a worker performing inspection. The worker withdrew before being struck.",true
+NM-HH-03-C,Near Miss,Controlled,"The hydraulic circuit was isolated and bled to zero pressure before inspection. The defective hose was repaired by authorized personnel and the system was tested safely before operation.",false
+
+UC-EL-01,Unsafe Condition,Dangerous,"A damaged electrical cable has exposed conductors near a wet work area. The cable insulation is broken and the exposed section has not been isolated or repaired.",true
+UC-EL-01-C,Unsafe Condition,Controlled,"The damaged electrical cable was removed from service, the circuit was isolated and locked out, the area was made safe, and the cable was replaced by an authorized electrician before work resumed.",false
+UC-EL-02,Unsafe Condition,Dangerous,"An electrical junction box has an open cover with exposed live terminals in an accessible work area. The electrical circuit has not been isolated and the hazard remains present.",true
+UC-EL-02-C,Unsafe Condition,Controlled,"The electrical circuit was isolated and locked out, zero energy was verified, the junction box cover was repaired by an authorized electrician, and the area was made safe before work resumed.",false
+UC-EL-03,Unsafe Condition,Dangerous,"A frayed extension cable has exposed wires on a construction worksite. The damaged cable remains in service and has not been removed from use.",true
+UC-EL-03-C,Unsafe Condition,Controlled,"The damaged extension cable was removed from service, the electrical supply was isolated, the defective cable was replaced, and the area was checked by authorized personnel before work resumed.",false
+
+UC-PC-01,Unsafe Condition,Dangerous,"A high-pressure process line has severe corrosion and pitting around a flange, with visible leakage developing from the joint. The damaged section has not yet been repaired.",true
+UC-PC-01-C,Unsafe Condition,Controlled,"The leaking process section was isolated, depressurized, repaired, pressure-tested, and returned to service only after the repair was verified.",false
+UC-PC-02,Unsafe Condition,Dangerous,"A pressurized process pipe has significant external corrosion and a developing crack near a flange. The line remains in service and the damaged section has not been repaired.",true
+UC-PC-02-C,Unsafe Condition,Controlled,"The affected process pipe was isolated and depressurized, the damaged section was repaired, the repair was pressure-tested, and the line was returned to service after verification.",false
+UC-PC-03,Unsafe Condition,Dangerous,"A corroded high-pressure line near the pump shows wall thinning and leakage. The condition has not been repaired and the line remains under operating pressure.",true
+UC-PC-03-C,Unsafe Condition,Controlled,"The affected high-pressure line was removed from service through proper isolation, pressure was released, the damaged section was repaired and inspected, and the line was returned to service after successful testing.",false
+
+UC-SC-01,Unsafe Condition,Dangerous,"A scaffold has a missing guardrail and an unsecured platform plank at an elevated work area. The scaffold remains available for workers to use.",true
+UC-SC-01-C,Unsafe Condition,Controlled,"The scaffold was taken out of service, missing guardrails were installed, the platform was secured, and the scaffold was inspected and approved before workers returned.",false
+UC-SC-02,Unsafe Condition,Dangerous,"An elevated scaffold platform has an incomplete working deck and missing toe boards. Materials could fall from the platform and workers could be exposed to a fall hazard.",true
+UC-SC-02-C,Unsafe Condition,Controlled,"The scaffold was barricaded and removed from service until the platform was completed, toe boards were installed, and a competent person inspected and approved the scaffold.",false
+UC-SC-03,Unsafe Condition,Dangerous,"A scaffold has a loose plank and damaged access ladder, and its inspection status is not current. Workers are still using the scaffold.",true
+UC-SC-03-C,Unsafe Condition,Controlled,"The scaffold was taken out of service, the loose plank and damaged ladder were replaced, the scaffold was inspected by a competent person, and the updated inspection status was displayed before use.",false

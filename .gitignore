@@ -1,20 +1,13 @@
-# Byte-compiled / optimized / DLL files
+﻿.venv/
+venv/
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Caches & Environments
-.venv/
-venv/
-ENV/
-env/
-.pytest_cache/
-.vercel/
-
-# Media files
-*.wav
-*.mp3
-
-# Operating System files
-.DS_Store
-Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+.vscode/
+.idea/
+*.tmp
+*.bak
