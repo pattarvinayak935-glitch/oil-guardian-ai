@@ -11,3 +11,10 @@ __pycache__/
 .idea/
 *.tmp
 *.bak
+frontend/*_backup.html
+ml_modules/unsafe_act/inference_v3_backup.py
+patch_control_ui.py
+patch_frontend_api.py
+patch_frontend_router.py
+patch_nearmiss_router.py
+patch_router.py
