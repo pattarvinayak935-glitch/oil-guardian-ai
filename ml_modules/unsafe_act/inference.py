@@ -4,9 +4,9 @@ import joblib
 from pathlib import Path
 
 
-# V4 model is stored in the separate model-development project
+# V4 model stored inside this project
 MODEL_PATH = (
-    Path(r"C:\Users\Vinayak Pattar\OneDrive\Desktop\oil-safety-classifier-backup")
+    Path(__file__).resolve().parent
     / "models"
     / "unsafe_act_sif_v4_model.joblib"
 )
@@ -54,7 +54,6 @@ def analyze(text: str) -> dict:
         prediction = int(_model.predict([text])[0])
         sif_prob = float(prediction)
 
-    # V4 uses 0.34 as the SIF decision threshold
     is_sif = sif_prob >= SIF_THRESHOLD
 
     conf_pct = round(sif_prob * 100, 1)
